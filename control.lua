@@ -298,7 +298,7 @@ local function on_built_entity(event)
           y = entity.position.y + y_input,
         },
         force = entity.force,
-        build_check_type = defines.build_check_type.ghost_place,
+        build_check_type = defines.build_check_type.blueprint_ghost,
       }) then
         local requester = entity.surface.create_entity({
           name = "entity-ghost",
@@ -320,7 +320,7 @@ local function on_built_entity(event)
           y = entity.position.y + y_output,
         },
         force = entity.force,
-        build_check_type = defines.build_check_type.ghost_place,
+        build_check_type = defines.build_check_type.blueprint_ghost,
       }) then
         local provider = entity.surface.create_entity({
           name = "entity-ghost",
@@ -336,9 +336,9 @@ local function on_built_entity(event)
         end
       end
 
-      global.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
-    elseif global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] then
-      global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
+      storage.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
+    elseif storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] then
+      storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
     end
   end
 end
@@ -351,50 +351,50 @@ local function on_entity_renamed(event)
     local entity = event.entity
     -- unregister the entity from tracking in the old table
     if event.old_name ~= "__mt__" then
-      global.scaling_stations[entity.surface.index][entity.force.name][event.old_name].entities[entity.unit_number] = nil
+      storage.scaling_stations[entity.surface.index][entity.force.name][event.old_name].entities[entity.unit_number] = nil
 
       -- check if the old station name no longer has any associated stations
-      if not next(global.scaling_stations[entity.surface.index][entity.force.name][event.old_name].entities) then
+      if not next(storage.scaling_stations[entity.surface.index][entity.force.name][event.old_name].entities) then
         -- delete its config if that was the last
-        global.scaling_stations[entity.surface.index][entity.force.name][event.old_name] = nil
+        storage.scaling_stations[entity.surface.index][entity.force.name][event.old_name] = nil
       end
     end
     if entity.backer_name == "__mt__" then
       return
     end
     -- register the entity for tracking in the new table
-    global.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
+    storage.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
   elseif event.entity.type == "train-stop" then
     local entity = event.entity
-    if event.old_name ~= "__mt__" and global.enabled_stations[entity.surface.index][entity.force.name][event.old_name] and global.enabled_stations[entity.surface.index][entity.force.name][event.old_name].entities then
+    if event.old_name ~= "__mt__" and storage.enabled_stations[entity.surface.index][entity.force.name][event.old_name] and storage.enabled_stations[entity.surface.index][entity.force.name][event.old_name].entities then
       -- unregister the entity from tracking in the old table
-      global.enabled_stations[entity.surface.index][entity.force.name][event.old_name].entities[entity.unit_number] = nil
+      storage.enabled_stations[entity.surface.index][entity.force.name][event.old_name].entities[entity.unit_number] = nil
       -- check if the old station name no longer has any associated stations
-      if not next(global.enabled_stations[entity.surface.index][entity.force.name][event.old_name].entities) then
+      if not next(storage.enabled_stations[entity.surface.index][entity.force.name][event.old_name].entities) then
         -- that was the last one
         -- check if new name is unconfigured, if it is we'll move the config over
-        if not global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] or not global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities then
-          global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] = global.enabled_stations[entity.surface.index][entity.force.name][event.old_name]
+        if not storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] or not storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities then
+          storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] = storage.enabled_stations[entity.surface.index][entity.force.name][event.old_name]
         end
         -- remove old config
-        global.enabled_stations[entity.surface.index][entity.force.name][event.old_name] = nil
+        storage.enabled_stations[entity.surface.index][entity.force.name][event.old_name] = nil
       end
 
       if entity.backer_name == "__mt__" then
         return
       end
       -- register in new table if it's already set up
-      if global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] and global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities then
-        global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
+      if storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] and storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities then
+        storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
       end
 
     else
       if entity.backer_name == "__mt__" then
         return
       end
-      if global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] and global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities then
+      if storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] and storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities then
         -- new name is configured but old wasn't, just register
-        global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
+        storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities[entity.unit_number] = entity
       end
     end
   end
@@ -405,23 +405,23 @@ script.on_event(defines.events.on_entity_renamed, on_entity_renamed)
 local function on_entity_gone(event)
   if event.entity.name == "train-scaling-stop" then
     -- nil this station's settings and metrics
-    global.scaling_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name].entities[event.entity.unit_number] = nil
-    global.scaling_station_metrics[event.entity.unit_number] = nil
-    global.scaling_burner_state[event.entity.unit_number] = nil
+    storage.scaling_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name].entities[event.entity.unit_number] = nil
+    storage.scaling_station_metrics[event.entity.unit_number] = nil
+    storage.scaling_burner_state[event.entity.unit_number] = nil
 
     -- if it was the last of these, nuke the config table too
-    if not next(global.scaling_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name].entities) then
-      global.scaling_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name] = nil
+    if not next(storage.scaling_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name].entities) then
+      storage.scaling_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name] = nil
     end
   elseif event.entity.type == "train-stop" then
-    if global.enabled_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name] then
+    if storage.enabled_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name] then
       -- unregister from tracking
-      global.enabled_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name].entities[event.entity.unit_number] = nil
-      global.scaling_signal_holdoff_timestamps[event.entity.unit_number] = nil
+      storage.enabled_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name].entities[event.entity.unit_number] = nil
+      storage.scaling_signal_holdoff_timestamps[event.entity.unit_number] = nil
 
       -- if it was the last of these, nuke the config table too
-      if not next(global.enabled_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name].entities) then
-        global.enabled_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name] = nil
+      if not next(storage.enabled_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name].entities) then
+        storage.enabled_stations[event.entity.surface.index][event.entity.force.name][event.entity.backer_name] = nil
       end
     end
   end
@@ -433,15 +433,15 @@ script.on_event(defines.events.on_entity_died, on_entity_gone)
 local function on_forces_merging(event)
   -- deconflicting templates and all that is a hassle, just nil out the source side's configs for now
   for _, surface in pairs(game.surfaces) do
-    global.scaling_stations[surface.index][event.source.name] = nil
-    global.enabled_stations[surface.index][event.source.name] = nil
+    storage.scaling_stations[surface.index][event.source.name] = nil
+    storage.enabled_stations[surface.index][event.source.name] = nil
   end
 end
 script.on_event(defines.events.on_forces_merging, on_forces_merging)
 
 local function on_pre_surface_deleted(event)
-  global.scaling_stations[event.surface_index] = nil
-  global.enabled_stations[event.surface_index] = nil
+  storage.scaling_stations[event.surface_index] = nil
+  storage.enabled_stations[event.surface_index] = nil
 end
 script.on_event(defines.events.on_pre_surface_deleted, on_pre_surface_deleted)
 
@@ -717,7 +717,7 @@ local function abort_build(train_config)
   if train_config.builder_loco and train_config.builder_loco.valid then
     -- save the state of the tug train's burner for next time this station builds one
     local burner = train_config.builder_loco.burner
-    global.scaling_burner_state[train_config.builder_station_unit_number] = {
+    storage.scaling_burner_state[train_config.builder_station_unit_number] = {
       currently_burning = burner.currently_burning,
       remaining_burning_fuel = burner.remaining_burning_fuel,
       inventory_contents = burner.inventory.get_contents(),
@@ -735,8 +735,8 @@ local function abort_build(train_config)
     end
   end
   -- clear from queue
-  global.scaling_build_queue[train_config.builder_station_unit_number] = nil
-  local station_config = global.enabled_stations[train_config.surface_index][train_config.force_name][train_config.enabled_station_name]
+  storage.scaling_build_queue[train_config.builder_station_unit_number] = nil
+  local station_config = storage.enabled_stations[train_config.surface_index][train_config.force_name][train_config.enabled_station_name]
   if station_config then
     if station_config.running_builds and station_config.running_builds > 0 then
       station_config.running_builds = station_config.running_builds - 1
@@ -745,7 +745,7 @@ local function abort_build(train_config)
     end
   end
   -- unregister if there's no other pending builds
-  if not next(global.scaling_build_queue) then
+  if not next(storage.scaling_build_queue) then
     script.on_nth_tick(5, nil)
   end
 end
@@ -757,7 +757,7 @@ local function abort_deconstruct(train_config)
   if train_config.builder_loco and train_config.builder_loco.valid then
     -- save the state of the tug train's burner for next time this station builds one
     local burner = train_config.builder_loco.burner
-    global.scaling_burner_state[train_config.builder_station_unit_number] = {
+    storage.scaling_burner_state[train_config.builder_station_unit_number] = {
       currently_burning = burner.currently_burning,
       remaining_burning_fuel = burner.remaining_burning_fuel,
       inventory_contents = burner.inventory.get_contents(),
@@ -765,8 +765,8 @@ local function abort_deconstruct(train_config)
     train_config.builder_loco.destroy()
   end
   -- clear from queue
-  global.scaling_build_queue[train_config.builder_station_unit_number] = nil
-  if not next(global.scaling_build_queue) then
+  storage.scaling_build_queue[train_config.builder_station_unit_number] = nil
+  if not next(storage.scaling_build_queue) then
     script.on_nth_tick(5, nil)
   end
 end
@@ -777,7 +777,7 @@ end
 
 -- tick handler (once every 5 ticks) which is registered only while a train is constructing/deconstructing
 local function building_tick(event)
-  for i, train_config in pairs(global.scaling_build_queue) do
+  for i, train_config in pairs(storage.scaling_build_queue) do
     local abort = false
     local train
     -- bail if the tug's gone
@@ -917,7 +917,7 @@ local function building_tick(event)
               if fuel_inventory and fuel_inventory.valid and fuel_inventory.can_insert(carriage_config.fuel) then
                 local count = input_inventory.remove({
                   name = carriage_config.fuel,
-                  count = game.item_prototypes[carriage_config.fuel].stack_size * (carriage_config.fuel_stacks or 1),
+                  count = prototypes.item[carriage_config.fuel].stack_size * (carriage_config.fuel_stacks or 1),
                 })
                 if count > 0 then
                   fuel_inventory.insert({
@@ -1011,17 +1011,17 @@ local function building_tick(event)
                 local template_train = template.train
                 
                 -- clear the build queue
-                global.scaling_build_queue[i] = nil
+                storage.scaling_build_queue[i] = nil
 
                 -- unregister if none running
-                if not next(global.scaling_build_queue) then
+                if not next(storage.scaling_build_queue) then
                   script.on_nth_tick(5, nil)
                 end
 
                 train_config.driver.destroy()
                 -- save burner state for next time
                 local burner = train_config.builder_loco.burner
-                global.scaling_burner_state[train_config.builder_station.unit_number] = {
+                storage.scaling_burner_state[train_config.builder_station.unit_number] = {
                   currently_burning = burner.currently_burning,
                   remaining_burning_fuel = burner.remaining_burning_fuel,
                   inventory_contents = burner.inventory.get_contents(),
@@ -1052,7 +1052,7 @@ local function building_tick(event)
                   -- and, auto mode, off you go
                   wagon.train.manual_mode = false
 
-                  local station_config = global.enabled_stations[template.surface.index][template.force.name][train_config.enabled_station_name]
+                  local station_config = storage.enabled_stations[template.surface.index][template.force.name][train_config.enabled_station_name]
                   if station_config then
                     -- station still exists, update it
                     -- decrement running build count
@@ -1064,7 +1064,7 @@ local function building_tick(event)
                     end
 
                     -- update metrics
-                    global.scaling_station_metrics[i].built_trains = global.scaling_station_metrics[i].built_trains + 1
+                    storage.scaling_station_metrics[i].built_trains = storage.scaling_station_metrics[i].built_trains + 1
                     if not station_config.built_trains then
                       station_config.built_trains = 1
                     else
@@ -1157,15 +1157,15 @@ local function building_tick(event)
             if train_config.expected_length == 1 then
               train_config.driver.destroy()
               local burner = train_config.builder_loco.burner
-              global.scaling_burner_state[train_config.builder_station.unit_number] = {
+              storage.scaling_burner_state[train_config.builder_station.unit_number] = {
                 currently_burning = burner.currently_burning,
                 remaining_burning_fuel = burner.remaining_burning_fuel,
                 inventory_contents = burner.inventory.get_contents(),
               }
               train_config.builder_loco.destroy()
-              global.scaling_build_queue[i] = nil
+              storage.scaling_build_queue[i] = nil
               --metrics
-              global.scaling_station_metrics[i].decommissioned_trains = global.scaling_station_metrics[i].decommissioned_trains + 1
+              storage.scaling_station_metrics[i].decommissioned_trains = storage.scaling_station_metrics[i].decommissioned_trains + 1
             end
           else
             -- the deconstruction is failing due to not enough room in output; continue waiting in this state up to 5 minutes
@@ -1186,13 +1186,13 @@ end
 local function try_build(surface_id, force_id, station_name, station_config, scaling_config, count)
   if station_config.template and station_config.template.valid then
     -- clear error rate limiters for stations whose errors were long enough ago
-    if not global.errors then
-      global.errors = {}
+    if not storage.errors then
+      storage.errors = {}
     end
     local tick = game.tick
-    for i, error_tick in pairs(global.errors) do
+    for i, error_tick in pairs(storage.errors) do
       if tick - error_tick >= 180 then
-        global.errors[i] = nil
+        storage.errors[i] = nil
       end
     end
     -- set up the build plan for the train desired
@@ -1222,7 +1222,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
     for station_entity_id, station_entity in pairs(scaling_config.entities) do
       if not station_entity.valid then
         scaling_config.entities[station_entity_id] = nil
-      elseif not global.scaling_build_queue[station_entity_id] then
+      elseif not storage.scaling_build_queue[station_entity_id] then
         local build_config = util.table.deepcopy(train_config)
         local fail = false
         local fail_reason
@@ -1268,19 +1268,19 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
             if carriage_config.fuel_categories and not fail then
               local best
               for item_name, item_count in pairs(contents) do
-                if game.item_prototypes[item_name].fuel_category and carriage_config.fuel_categories[game.item_prototypes[item_name].fuel_category] and item_count > 0 then
-                  if not best or game.item_prototypes[item_name].fuel_value > game.item_prototypes[best].fuel_value then
+                if prototypes.item[item_name].fuel_category and carriage_config.fuel_categories[prototypes.item[item_name].fuel_category] and item_count > 0 then
+                  if not best or prototypes.item[item_name].fuel_value > prototypes.item[best].fuel_value then
                     best = item_name
                   end
                 end
               end
               if best then
-                local stacks = game.item_prototypes[carriage_config.item_to_place].place_result.get_inventory_size(defines.inventory.fuel)
+                local stacks = prototypes.item[carriage_config.item_to_place].place_result.get_inventory_size(defines.inventory.fuel)
 
                 if scaling_config.fuel_stack_count then
                   stacks = scaling_config.fuel_stack_count
                 end
-                contents[best] = contents[best] - (game.item_prototypes[best].stack_size * stacks)
+                contents[best] = contents[best] - (prototypes.item[best].stack_size * stacks)
                 carriage_config.fuel = best
                 carriage_config.fuel_stacks = stacks
               end
@@ -1383,13 +1383,13 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 -- restore the burner state from last time 
                 local fuel_inventory = builder_loco.get_inventory(defines.inventory.fuel)
                 local burner = builder_loco.burner
-                if global.scaling_burner_state[station_entity.unit_number] then
-                  local currently_burning = global.scaling_burner_state[station_entity.unit_number].currently_burning
+                if storage.scaling_burner_state[station_entity.unit_number] then
+                  local currently_burning = storage.scaling_burner_state[station_entity.unit_number].currently_burning
                   if currently_burning and currently_burning.valid and currently_burning.fuel_category then
                     burner.currently_burning = currently_burning
-                    burner.remaining_burning_fuel = global.scaling_burner_state[station_entity.unit_number].remaining_burning_fuel
+                    burner.remaining_burning_fuel = storage.scaling_burner_state[station_entity.unit_number].remaining_burning_fuel
                   end
-                  for name, count in pairs(global.scaling_burner_state[station_entity.unit_number].inventory_contents) do
+                  for name, count in pairs(storage.scaling_burner_state[station_entity.unit_number].inventory_contents) do
                     fuel_inventory.insert({
                       name = name,
                       count = count,
@@ -1400,12 +1400,12 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 contents = chest_inventory.get_contents()
                 -- fill it with fuel!
                 for item_name in pairs(contents) do
-                  if contents[item_name] > 0 and game.item_prototypes[item_name].fuel_category and builder_loco.burner.fuel_categories[game.item_prototypes[item_name].fuel_category] then
+                  if contents[item_name] > 0 and prototypes.item[item_name].fuel_category and builder_loco.burner.fuel_categories[prototypes.item[item_name].fuel_category] then
                     local i = 1
                     while fuel_inventory.can_insert(item_name) and i <= 5 do
                       local removed = chest_inventory.remove({
                         name = item_name,
-                        count = game.item_prototypes[item_name].stack_size,
+                        count = prototypes.item[item_name].stack_size,
                       })
                       if removed > 0 then
                         fuel_inventory.insert({
@@ -1454,11 +1454,11 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 build_config.type = "construction"
 
                 -- attach the on_tick handler
-                if not next(global.scaling_build_queue) then
+                if not next(storage.scaling_build_queue) then
                   script.on_nth_tick(5, building_tick)
                 end
                 -- finally, add it to the queue
-                global.scaling_build_queue[station_entity.unit_number] = build_config
+                storage.scaling_build_queue[station_entity.unit_number] = build_config
 
                 -- tracking the number of in-progress train builds for checking if more need triggered
                 station_config.running_builds = (station_config.running_builds or 0) + 1
@@ -1489,7 +1489,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
     -- didn't get all of our builds completed, create some floating text entities
     for station_entity_id, station_entity in pairs(scaling_config.entities) do
       if fail_reasons[station_entity_id] then
-        if not global.errors[station_entity_id] then
+        if not storage.errors[station_entity_id] then
           surface.create_entity({
             name = "flying-text",
             text = {fail_reasons[station_entity_id]},
@@ -1497,7 +1497,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
             force = station_entity.force,
           })
-          global.errors[station_entity_id] = tick
+          storage.errors[station_entity_id] = tick
         end
       end
     end
@@ -1507,7 +1507,7 @@ end
 local function on_train_changed_state(event)
   if event.train.station and event.train.station.name == "train-scaling-stop" then
     local station_entity = event.train.station
-    local scaling_config = global.scaling_stations[station_entity.surface.index][station_entity.force.name][station_entity.backer_name]
+    local scaling_config = storage.scaling_stations[station_entity.surface.index][station_entity.force.name][station_entity.backer_name]
     -- a train stopped at a special station, let's see if we should deconstruct it
     if station_entity.backer_name == "__mt__" then
       return
@@ -1589,7 +1589,7 @@ local function on_train_changed_state(event)
 
     if carriage_count == 1 then
       --already done, it was a 1-car train - just increment the metric and don't worry about all this mess with the tug
-      global.scaling_station_metrics[station_entity.unit_number].decommissioned_trains = global.scaling_station_metrics[station_entity.unit_number].decommissioned_trains + 1
+      storage.scaling_station_metrics[station_entity.unit_number].decommissioned_trains = storage.scaling_station_metrics[station_entity.unit_number].decommissioned_trains + 1
       return
     end
     local builder_loco = surface.create_entity(create)
@@ -1713,12 +1713,12 @@ local function on_train_changed_state(event)
       -- restore burner state
       local fuel_inventory = builder_loco.get_inventory(defines.inventory.fuel)
       local burner = builder_loco.burner
-      if global.scaling_burner_state[station_entity.unit_number] then
-        local currently_burning = global.scaling_burner_state[station_entity.unit_number].currently_burning
+      if storage.scaling_burner_state[station_entity.unit_number] then
+        local currently_burning = storage.scaling_burner_state[station_entity.unit_number].currently_burning
         if currently_burning and currently_burning.valid and currently_burning.fuel_category then
           burner.currently_burning = currently_burning
-          burner.remaining_burning_fuel = global.scaling_burner_state[station_entity.unit_number].remaining_burning_fuel
-          for name, count in pairs(global.scaling_burner_state[station_entity.unit_number].inventory_contents) do
+          burner.remaining_burning_fuel = storage.scaling_burner_state[station_entity.unit_number].remaining_burning_fuel
+          for name, count in pairs(storage.scaling_burner_state[station_entity.unit_number].inventory_contents) do
             fuel_inventory.insert({
               name = name,
               count = count,
@@ -1743,12 +1743,12 @@ local function on_train_changed_state(event)
         local chest_inventory = input_chest_entities[1].get_inventory(defines.inventory.chest)
         local contents = chest_inventory.get_contents()
         for item_name in pairs(contents) do
-          if game.item_prototypes[item_name].fuel_category and builder_loco.burner.fuel_categories[game.item_prototypes[item_name].fuel_category] then
+          if prototypes.item[item_name].fuel_category and builder_loco.burner.fuel_categories[prototypes.item[item_name].fuel_category] then
             local i = 1
             while fuel_inventory.can_insert(item_name) and i <= 5 do
               local remove_count = chest_inventory.remove({
                 name = item_name,
-                count = game.item_prototypes[item_name].stack_size,
+                count = prototypes.item[item_name].stack_size,
               })
               if remove_count > 0 then
                 fuel_inventory.insert({
@@ -1808,11 +1808,11 @@ local function on_train_changed_state(event)
       }
 
       -- attach the on_tick handler
-      if not next(global.scaling_build_queue) then
+      if not next(storage.scaling_build_queue) then
         script.on_nth_tick(5, building_tick)
       end
       -- finally, add it to the queue
-      global.scaling_build_queue[station_entity.unit_number] = build_config
+      storage.scaling_build_queue[station_entity.unit_number] = build_config
 
     else
       -- couldn't make the tug
@@ -1984,27 +1984,27 @@ end
 local function construction_check(event)
   local check_count = 0
   -- check that the cursor surface hasn't been nilled between ticks
-  if global.cursor_surface and not rawget(global.enabled_stations, global.cursor_surface) then
-    global.cursor_surface = nil
+  if storage.cursor_surface and not rawget(storage.enabled_stations, storage.cursor_surface) then
+    storage.cursor_surface = nil
   end
   -- scan surfaces
-  for surface, forces in next, global.enabled_stations, global.cursor_surface do
+  for surface, forces in next, storage.enabled_stations, storage.cursor_surface do
     -- skip __mt__ entries
     if type(forces) ~= "string" then
       -- check that the force hasn't been nilled between ticks
-      if global.cursor_force and not rawget(forces, global.cursor_force) then
-        global.cursor_force = nil
+      if storage.cursor_force and not rawget(forces, storage.cursor_force) then
+        storage.cursor_force = nil
       end
       -- scan stations
-      for force, stations in next, forces, global.cursor_force do
+      for force, stations in next, forces, storage.cursor_force do
         -- skip __mt__ entries
         if type(stations) ~= "string" then
           -- check that the station name hasn't been deconfigured between ticks
-          if global.cursor_station and not rawget(stations, global.cursor_station) then
-            global.cursor_station = nil
+          if storage.cursor_station and not rawget(stations, storage.cursor_station) then
+            storage.cursor_station = nil
           end
           -- scan stations
-          for station_name, station_config in next, stations, global.cursor_station do
+          for station_name, station_config in next, stations, storage.cursor_station do
             if station_config.template and station_config.construction_station then
               -- config is ready for this station
               -- update signals if configured 
@@ -2056,7 +2056,7 @@ local function construction_check(event)
               if station_config.target then
                 -- configured to scale, try to reach target
                 if station_config.target > station_config.current + (station_config.running_builds or 0) then
-                  try_build(surface, force, station_name, station_config, global.scaling_stations[surface][force][station_config.construction_station], station_config.target - (station_config.current + (station_config.running_builds or 0)))
+                  try_build(surface, force, station_name, station_config, storage.scaling_stations[surface][force][station_config.construction_station], station_config.target - (station_config.current + (station_config.running_builds or 0)))
                 elseif station_config.target < station_config.current then
                   try_decommission(surface, force, station_name, station_config, station_config.current - station_config.target)
                 end
@@ -2064,11 +2064,11 @@ local function construction_check(event)
                 check_count = check_count + 5
               else
                 -- check that the cursor entity hasn't been deconfigured between ticks
-                if global.cursor_entity and not station_config.entities[global.cursor_entity] then
-                  global.cursor_entity = nil
+                if storage.cursor_entity and not station_config.entities[storage.cursor_entity] then
+                  storage.cursor_entity = nil
                 end
                 -- scan entities for signals
-                for entity_unit_number, entity in next, station_config.entities, global.cursor_entity do
+                for entity_unit_number, entity in next, station_config.entities, storage.cursor_entity do
                   if entity.valid then
                     local up
                     local down
@@ -2083,55 +2083,55 @@ local function construction_check(event)
                         end
                       end
                       -- if one signal (and not the other) is present, check if we're outside the rate limit for this action on this entity and if so, trigger
-                      if up and game.tick - (up * 60) > global.scaling_signal_holdoff_timestamps[entity.unit_number].up and not down then
-                        global.scaling_signal_holdoff_timestamps[entity.unit_number].up = game.tick
-                        try_build(surface, force, station_name, station_config, global.scaling_stations[surface][force][station_config.construction_station], 1)
-                      elseif down and game.tick - (down * 60) > global.scaling_signal_holdoff_timestamps[entity.unit_number].down and station_config.current > 1 and not up then
-                        global.scaling_signal_holdoff_timestamps[entity.unit_number].down = game.tick
+                      if up and game.tick - (up * 60) > storage.scaling_signal_holdoff_timestamps[entity.unit_number].up and not down then
+                        storage.scaling_signal_holdoff_timestamps[entity.unit_number].up = game.tick
+                        try_build(surface, force, station_name, station_config, storage.scaling_stations[surface][force][station_config.construction_station], 1)
+                      elseif down and game.tick - (down * 60) > storage.scaling_signal_holdoff_timestamps[entity.unit_number].down and station_config.current > 1 and not up then
+                        storage.scaling_signal_holdoff_timestamps[entity.unit_number].down = game.tick
                         try_decommission(surface, force, station_name, station_config, 1)
                       end
                     end
                   end
-                  global.cursor_entity = entity_unit_number
+                  storage.cursor_entity = entity_unit_number
 
                   check_count = check_count + 1
                   if check_count >= 15 then
                     return
                   end
                 end
-                global.cursor_entity = nil
+                storage.cursor_entity = nil
               end
             end
 
-            global.cursor_station = station_name
+            storage.cursor_station = station_name
             if check_count >= 15 then
               return
             end
           end
-          global.cursor_station = nil
+          storage.cursor_station = nil
         end
-        global.cursor_force = force
+        storage.cursor_force = force
       end
-      global.cursor_force = nil
+      storage.cursor_force = nil
     end
-    global.cursor_surface = surface
+    storage.cursor_surface = surface
   end
-  global.cursor_surface = nil
+  storage.cursor_surface = nil
 end
 script.on_nth_tick(300, construction_check)
 
 -- UI stuff!
 local function get_trains_dropdown(entity, player)
-  local template = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].template
+  local template = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].template
   local template_train_id
   if template and template.valid then
     template_train_id = template.train.id
   end
   local items = {{"train-scaling.config-no-template"}}
-  if not global.open_train_dropdown_mapping then
-    global.open_train_dropdown_mapping = {}
+  if not storage.open_train_dropdown_mapping then
+    storage.open_train_dropdown_mapping = {}
   end
-  global.open_train_dropdown_mapping[player.index] = {0}
+  storage.open_train_dropdown_mapping[player.index] = {0}
   local selected = 1
   for i, train in ipairs(entity.get_train_stop_trains()) do
     if train.id == template_train_id then
@@ -2181,7 +2181,7 @@ local function get_trains_dropdown(entity, player)
         train_string = string.format("%s-%d[item=locomotive]", train_string, backward)
       end
       table.insert(items, string.format("%s  (%d[item=train-stop])", train_string, #train.schedule.records))
-      table.insert(global.open_train_dropdown_mapping[player.index], loco)
+      table.insert(storage.open_train_dropdown_mapping[player.index], loco)
     end
   end
   if template and template.valid and selected == 1 then
@@ -2189,7 +2189,7 @@ local function get_trains_dropdown(entity, player)
     table.insert(items, {"train-scaling.disassociated-train"})
     selected = #items
     -- add a buffer item for the redraw
-    table.insert(global.open_train_dropdown_mapping[player.index], false)
+    table.insert(storage.open_train_dropdown_mapping[player.index], false)
   end
   return items, selected
 end
@@ -2198,7 +2198,7 @@ local function draw_normal_station_gui(player)
   local entity = player.opened
 
   local empty = true
-  for k, v in pairs(global.scaling_stations[entity.surface.index][entity.force.name]) do
+  for k, v in pairs(storage.scaling_stations[entity.surface.index][entity.force.name]) do
     if k ~= "__mt__" then
       empty = false
       break
@@ -2222,7 +2222,7 @@ local function draw_normal_station_gui(player)
     type = "flow",
     direction = "vertical",
   })
-  local enabled = (global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] ~= nil)
+  local enabled = (storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] ~= nil)
   local mode_checkbox = config_flow.add({
     name = "train_scaling_config_enable_toggle",
     type = "checkbox",
@@ -2254,7 +2254,7 @@ local function draw_normal_station_gui(player)
     })
 
     if selected ~= 1 then
-      local station_config = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
+      local station_config = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
       local count = 0
       local template_train = station_config.template.train
       for _, train in pairs(entity.get_train_stop_trains()) do
@@ -2265,7 +2265,7 @@ local function draw_normal_station_gui(player)
       station_config.current = count
       local stations = {}
       local selected = 0
-      for name, v in pairs(global.scaling_stations[entity.surface.index][entity.force.name]) do
+      for name, v in pairs(storage.scaling_stations[entity.surface.index][entity.force.name]) do
         if type(v) ~= "string" then
           table.insert(stations, name)
           if station_config.construction_station == name then
@@ -2390,7 +2390,7 @@ local function update_normal_station_gui(player)
   if not player.gui.left.train_scaling_config or not entity or not entity.valid then
     return
   end
-  local station_config = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
+  local station_config = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
   local config_flow = player.gui.left.train_scaling_config.train_scaling_config_flow
   local mode_checkbox = config_flow.train_scaling_config_enable_toggle
   if station_config and mode_checkbox.state == false then
@@ -2411,14 +2411,14 @@ local function update_normal_station_gui(player)
   end
   local template_dropdown = config_flow.train_scaling_template_flow.train_scaling_config_template_dropdown
   if station_config.template and station_config.template.valid then
-    if not global.open_train_dropdown_mapping then
-      global.open_train_dropdown_mapping = {}
+    if not storage.open_train_dropdown_mapping then
+      storage.open_train_dropdown_mapping = {}
     end
     if template_dropdown.selected_index == 1 then
       -- template configured but gui thinks it isn't, redraw
       return draw_normal_station_gui(player)
-    elseif global.open_train_dropdown_mapping[player.index][template_dropdown.selected_index] then
-      if station_config.template.unit_number ~= global.open_train_dropdown_mapping[player.index][template_dropdown.selected_index].unit_number then
+    elseif storage.open_train_dropdown_mapping[player.index][template_dropdown.selected_index] then
+      if station_config.template.unit_number ~= storage.open_train_dropdown_mapping[player.index][template_dropdown.selected_index].unit_number then
         --template doesn't match what we have in the dropdown, redraw
         return draw_normal_station_gui(player)
       end
@@ -2484,7 +2484,7 @@ local function draw_scaling_station_gui(player)
   if player.gui.left.train_scaling_config then
     player.gui.left.train_scaling_config.destroy()
   end
-  local scaling_config = global.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name]
+  local scaling_config = storage.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name]
   local frame = player.gui.left.add({
     name = "train_scaling_config",
     type = "frame",
@@ -2521,12 +2521,12 @@ local function draw_scaling_station_gui(player)
   local build_count_display = config_flow.add({
     name = "train_scaling_config_build_count",
     type = "label",
-    caption = {"train-scaling.config-build-count", global.scaling_station_metrics[entity.unit_number].built_trains },
+    caption = {"train-scaling.config-build-count", storage.scaling_station_metrics[entity.unit_number].built_trains },
   })
   local decommissioned_count_display = config_flow.add({
     name = "train_scaling_config_decom_count",
     type = "label",
-    caption = {"train-scaling.config-decommissioned-count", global.scaling_station_metrics[entity.unit_number].decommissioned_trains },
+    caption = {"train-scaling.config-decommissioned-count", storage.scaling_station_metrics[entity.unit_number].decommissioned_trains },
   })
 end
 
@@ -2535,7 +2535,7 @@ local function update_scaling_station_gui(player)
   if not player.gui.left.train_scaling_config or not entity then
     return
   end
-  local scaling_config = global.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name]
+  local scaling_config = storage.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name]
   local config_flow = player.gui.left.train_scaling_config.train_scaling_config_flow
 
   local stack_index = 1
@@ -2552,20 +2552,20 @@ local function update_scaling_station_gui(player)
 
   local build_count_display = config_flow.train_scaling_config_build_count
   if build_count_display then
-    build_count_display.caption = {"train-scaling.config-build-count", global.scaling_station_metrics[entity.unit_number].built_trains }
+    build_count_display.caption = {"train-scaling.config-build-count", storage.scaling_station_metrics[entity.unit_number].built_trains }
   end
 
   local decommissioned_count_display = config_flow.train_scaling_config_decom_count
   if decommissioned_count_display then
-    decommissioned_count_display.caption = {"train-scaling.config-decommissioned-count", global.scaling_station_metrics[entity.unit_number].decommissioned_trains }
+    decommissioned_count_display.caption = {"train-scaling.config-decommissioned-count", storage.scaling_station_metrics[entity.unit_number].decommissioned_trains }
   end
 end
 
 local function gui_refresh(event)
-  if not global.open_entity then
-    global.open_entity = {}
+  if not storage.open_entity then
+    storage.open_entity = {}
   end
-  for player_index, entity in pairs(global.open_entity) do
+  for player_index, entity in pairs(storage.open_entity) do
     if entity and entity.valid then
       if entity.name == "train-scaling-stop" then
         update_scaling_station_gui(game.players[player_index])
@@ -2573,12 +2573,12 @@ local function gui_refresh(event)
         update_normal_station_gui(game.players[player_index])
       end
     else
-      global.open_entity[player_index] = nil
+      storage.open_entity[player_index] = nil
       local player = game.players[player_index]
       if player.gui.left.train_scaling_config then
         player.gui.left.train_scaling_config.destroy()
       end
-      if not next(global.open_entity) then
+      if not next(storage.open_entity) then
         script.on_nth_tick(60, nil)
       end
     end
@@ -2589,20 +2589,20 @@ local function on_gui_opened(event)
   if event.entity and event.entity.type == "train-stop" then
     local player = game.players[event.player_index]
     if player.permission_group and player.permission_group.allows_action(defines.input_action.change_train_wait_condition) then
-      if not global.open_entity then
-        global.open_entity = {}
+      if not storage.open_entity then
+        storage.open_entity = {}
       end
       if event.entity.name == "train-scaling-stop" then
-        if not next(global.open_entity) then
+        if not next(storage.open_entity) then
           script.on_nth_tick(60, gui_refresh)
         end
-        global.open_entity[event.player_index] = event.entity
+        storage.open_entity[event.player_index] = event.entity
         draw_scaling_station_gui(player)
       else
-        if not next(global.open_entity) then
+        if not next(storage.open_entity) then
           script.on_nth_tick(60, gui_refresh)
         end
-        global.open_entity[event.player_index] = event.entity
+        storage.open_entity[event.player_index] = event.entity
         draw_normal_station_gui(player)
       end
     end
@@ -2612,15 +2612,15 @@ script.on_event(defines.events.on_gui_opened, on_gui_opened)
 
 local function on_gui_closed(event)
   if event.entity and event.entity.type == "train-stop" then
-    if not global.open_entity then
-      global.open_entity = {}
+    if not storage.open_entity then
+      storage.open_entity = {}
     end
-    global.open_entity[event.player_index] = nil
+    storage.open_entity[event.player_index] = nil
     local player = game.players[event.player_index]
     if player.gui.left.train_scaling_config then
       player.gui.left.train_scaling_config.destroy()
     end
-    if not next(global.open_entity) then
+    if not next(storage.open_entity) then
       script.on_nth_tick(60, nil)
     end
   end
@@ -2637,18 +2637,18 @@ local gui_change_handlers = {
         draw_normal_station_gui(game.players[event.player_index])
         return
       end
-      global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] = {
+      storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] = {
         construction_station = "Train Scaling Station",
         entities = {},
       }
-      local entities = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities
+      local entities = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].entities
       for _, station in ipairs(entity.surface.find_entities_filtered({type = "train-stop", force = entity.force})) do
         if station.backer_name == entity.backer_name then
           entities[station.unit_number] = station
         end
       end
     else
-      global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] = nil
+      storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name] = nil
     end
     entity.last_user = game.players[event.player_index]
     draw_normal_station_gui(game.players[event.player_index])
@@ -2657,7 +2657,7 @@ local gui_change_handlers = {
   train_scaling_config_target_slider = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local station_config = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
+    local station_config = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
     event.element.slider_value = math.floor(event.element.slider_value)
     station_config.target = event.element.slider_value
     if station_config.target == station_config.current then
@@ -2670,7 +2670,7 @@ local gui_change_handlers = {
   train_scaling_config_target_textbox = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local station_config = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
+    local station_config = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
     if tonumber(event.element.text) and tonumber(event.element.text) >= 0 then
       if tonumber(event.element.text) > 1000 then
         event.element.text = 1000
@@ -2690,13 +2690,13 @@ local gui_change_handlers = {
     local player = game.players[event.player_index]
     local entity = player.opened
     if event.element.selected_index == 1 then
-      global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].template = nil
+      storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].template = nil
     else
-      if not global.open_train_dropdown_mapping then
-        global.open_train_dropdown_mapping = {}
+      if not storage.open_train_dropdown_mapping then
+        storage.open_train_dropdown_mapping = {}
       end
-      if global.open_train_dropdown_mapping[event.player_index] and global.open_train_dropdown_mapping[event.player_index][event.element.selected_index] and global.open_train_dropdown_mapping[event.player_index][event.element.selected_index].valid then
-        global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].template = global.open_train_dropdown_mapping[event.player_index][event.element.selected_index]
+      if storage.open_train_dropdown_mapping[event.player_index] and storage.open_train_dropdown_mapping[event.player_index][event.element.selected_index] and storage.open_train_dropdown_mapping[event.player_index][event.element.selected_index].valid then
+        storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].template = storage.open_train_dropdown_mapping[event.player_index][event.element.selected_index]
       end
     end
     entity.last_user = game.players[event.player_index]
@@ -2706,7 +2706,7 @@ local gui_change_handlers = {
   train_scaling_config_signal_toggle = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local station_config = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
+    local station_config = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
     if event.element.state == true then
       station_config.output_signals = true
       -- set default signals if they aren't set
@@ -2729,7 +2729,7 @@ local gui_change_handlers = {
   train_scaling_config_current_choose = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local station_config = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
+    local station_config = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
     local signal = event.element.elem_value
     if signal then
       if signal.name == "signal-train-scale-up" or signal.name == "signal-train-scale-down" then
@@ -2752,7 +2752,7 @@ local gui_change_handlers = {
   train_scaling_config_total_choose = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local station_config = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
+    local station_config = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
     local signal = event.element.elem_value
     if signal then
       if signal.name == "signal-train-scale-up" or signal.name == "signal-train-scale-down" then
@@ -2775,7 +2775,7 @@ local gui_change_handlers = {
   train_scaling_config_stations_choose = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local station_config = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
+    local station_config = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name]
     local signal = event.element.elem_value
     if signal then
       if signal.name == "signal-train-scale-up" or signal.name == "signal-train-scale-down" then
@@ -2799,7 +2799,7 @@ local gui_change_handlers = {
     local player = game.players[event.player_index]
     local entity = player.opened
     if event.element.items[event.element.selected_index] ~= "" then
-      global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].construction_station = event.element.items[event.element.selected_index]
+      storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].construction_station = event.element.items[event.element.selected_index]
     end
     entity.last_user = game.players[event.player_index]
   end,
@@ -2807,7 +2807,7 @@ local gui_change_handlers = {
   train_scaling_station_fuel_stack_dropdown = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local scaling_config = global.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name]
+    local scaling_config = storage.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name]
     if event.element.selected_index == 1 then
       scaling_config.fuel_stack_count = nil
     else
@@ -2819,7 +2819,7 @@ local gui_change_handlers = {
   train_scaling_config_deconstruct_nonempty_toggle = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local scaling_config = global.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name]
+    local scaling_config = storage.scaling_stations[entity.surface.index][entity.force.name][entity.backer_name]
     if event.element.state == true then
       scaling_config.deconstruct_nonempty = true
     else
@@ -2833,7 +2833,7 @@ local gui_click_handlers = {
   train_scaling_config_template_goto_button = function(event)
     local player = game.players[event.player_index]
     local entity = player.opened
-    local template = global.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].template
+    local template = storage.enabled_stations[entity.surface.index][entity.force.name][entity.backer_name].template
     if template and template.valid then
       game.players[event.player_index].opened = template
     end
@@ -2842,18 +2842,18 @@ local gui_click_handlers = {
 
 local function on_gui_event(event)
   if gui_change_handlers[event.element.name] then
-    if not global.open_entity then
-      global.open_entity = {}
+    if not storage.open_entity then
+      storage.open_entity = {}
     end
-    if global.open_entity[event.player_index] and global.open_entity[event.player_index].valid then
+    if storage.open_entity[event.player_index] and storage.open_entity[event.player_index].valid then
       gui_change_handlers[event.element.name](event)
     else
-      global.open_entity[event.player_index] = nil
+      storage.open_entity[event.player_index] = nil
       local player = game.players[event.player_index]
       if player.gui.left.train_scaling_config then
         player.gui.left.train_scaling_config.destroy()
       end
-      if not next(global.open_entity) then
+      if not next(storage.open_entity) then
         script.on_nth_tick(60, nil)
       end
     end
@@ -2867,18 +2867,18 @@ script.on_event(defines.events.on_gui_elem_changed, on_gui_event)
 
 local function on_click_event(event)
   if gui_click_handlers[event.element.name] then
-    if not global.open_entity then
-      global.open_entity = {}
+    if not storage.open_entity then
+      storage.open_entity = {}
     end
-    if global.open_entity[event.player_index] and global.open_entity[event.player_index].valid then
+    if storage.open_entity[event.player_index] and storage.open_entity[event.player_index].valid then
       gui_click_handlers[event.element.name](event)
     else
-      global.open_entity[event.player_index] = nil
+      storage.open_entity[event.player_index] = nil
       local player = game.players[event.player_index]
       if player.gui.left.train_scaling_config then
         player.gui.left.train_scaling_config.destroy()
       end
-      if not next(global.open_entity) then
+      if not next(storage.open_entity) then
         script.on_nth_tick(60, nil)
       end
     end
@@ -2886,18 +2886,18 @@ local function on_click_event(event)
 end
 script.on_event(defines.events.on_gui_click, on_click_event)
 
--- metatables for attaching to stuff in the global table - string ids for each metatable for reattachment between loads
-local global_tree_metatables
-global_tree_metatables = {
+-- metatables for attaching to stuff in the storage table - string ids for each metatable for reattachment between loads
+local storage_tree_metatables
+storage_tree_metatables = {
   scaling_surface = {
     __index = function(table, key)
-      rawset(table, key, setmetatable({__mt__="scaling_force"}, global_tree_metatables.scaling_force))
+      rawset(table, key, setmetatable({__mt__="scaling_force"}, storage_tree_metatables.scaling_force))
       return rawget(table, key)
     end,
   },
   scaling_force = {
     __index = function(table, key)
-      rawset(table, key, setmetatable({__mt__="scaling_name"}, global_tree_metatables.scaling_name))
+      rawset(table, key, setmetatable({__mt__="scaling_name"}, storage_tree_metatables.scaling_name))
       return rawget(table, key)
     end,
   },
@@ -2909,7 +2909,7 @@ global_tree_metatables = {
   },
   enabled_surface = {
     __index = function(table, key)
-      rawset(table, key, setmetatable({__mt__="enabled_force"}, global_tree_metatables.enabled_force))
+      rawset(table, key, setmetatable({__mt__="enabled_force"}, storage_tree_metatables.enabled_force))
       return rawget(table, key)
     end,
   },
@@ -2927,7 +2927,7 @@ global_tree_metatables = {
   },
   station_metrics = {
     __index = function(table, key)
-      rawset(table, key, setmetatable({__mt__="metrics"}, global_tree_metatables.metrics))
+      rawset(table, key, setmetatable({__mt__="metrics"}, storage_tree_metatables.metrics))
       return rawget(table, key)
     end,
   },
@@ -2942,14 +2942,14 @@ global_tree_metatables = {
   },
 }
 
--- on init, set up the global tables for the first time
+-- on init, set up the storage tables for the first time
 local function on_init()
-  global.scaling_stations = setmetatable({__mt__="scaling_surface"}, global_tree_metatables.scaling_surface)
-  global.enabled_stations = setmetatable({__mt__="enabled_surface"}, global_tree_metatables.enabled_surface)
-  global.scaling_station_metrics = setmetatable({__mt__="station_metrics"}, global_tree_metatables.station_metrics)
-  global.scaling_signal_holdoff_timestamps = setmetatable({__mt__="holdoff_timestamps"}, global_tree_metatables.holdoff_timestamps)
-  global.scaling_build_queue = {}
-  global.scaling_burner_state = {}
+  storage.scaling_stations = setmetatable({__mt__="scaling_surface"}, storage_tree_metatables.scaling_surface)
+  storage.enabled_stations = setmetatable({__mt__="enabled_surface"}, storage_tree_metatables.enabled_surface)
+  storage.scaling_station_metrics = setmetatable({__mt__="station_metrics"}, storage_tree_metatables.station_metrics)
+  storage.scaling_signal_holdoff_timestamps = setmetatable({__mt__="holdoff_timestamps"}, storage_tree_metatables.holdoff_timestamps)
+  storage.scaling_build_queue = {}
+  storage.scaling_burner_state = {}
 end
 script.on_init(on_init)
 
@@ -2957,7 +2957,7 @@ script.on_init(on_init)
 local function recursive_attach(table)
   for k, v in pairs(table) do
     if k == "__mt__" then
-      setmetatable(table, global_tree_metatables[v])
+      setmetatable(table, storage_tree_metatables[v])
     elseif type(v) == "table" then
       recursive_attach(v)
     end
@@ -2965,12 +2965,12 @@ local function recursive_attach(table)
 end
 
 local function on_load()
-  recursive_attach(global.scaling_stations)
-  recursive_attach(global.enabled_stations)
-  recursive_attach(global.scaling_station_metrics)
-  recursive_attach(global.scaling_signal_holdoff_timestamps)
+  recursive_attach(storage.scaling_stations)
+  recursive_attach(storage.enabled_stations)
+  recursive_attach(storage.scaling_station_metrics)
+  recursive_attach(storage.scaling_signal_holdoff_timestamps)
   -- if something's in the build queue, reregister
-  if next(global.scaling_build_queue) then
+  if next(storage.scaling_build_queue) then
     script.on_nth_tick(5, building_tick)
   end
 end

@@ -1,6 +1,10 @@
 {
     "Lua.diagnostics.disable": [
-        "undefined-global"
+        "undefined-global",
+        "need-check-nil",
+        "cast-local-type",
+        "assign-type-mismatch",
+        "param-type-mismatch"
     ],
     "Lua.workspace.userThirdParty": [
         "c:\\Users\\XT7DE\\AppData\\Roaming\\Code\\User\\workspaceStorage\\2c45de678cb6570ea8eaffd707945240\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
