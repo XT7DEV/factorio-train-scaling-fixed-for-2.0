@@ -16,12 +16,15 @@ local recipe = {
   type = "recipe",
   name = "train-scaling-stop",
   enabled = false,
-  ingredients = {
-    {"train-stop", 1},
-    {"locomotive", 1},
-    {"advanced-circuit", 15},
+  ingredients =
+  {
+    {type="item", name="locomotive", amount=1},
+    {type="item", name="train-stop", amount=1},
+    {type="item", name="advanced-circuit", amount=15}
   },
-  result = "train-scaling-stop"
+  results = {
+    {type="item", name="train-scaling-stop", amount = 1}
+  },
 }
 
 local technology = {

@@ -1,0 +1,17 @@
+{
+    "Lua.diagnostics.disable": [
+        "undefined-global"
+    ],
+    "Lua.workspace.userThirdParty": [
+        "c:\\Users\\XT7DE\\AppData\\Roaming\\Code\\User\\workspaceStorage\\2c45de678cb6570ea8eaffd707945240\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
+    ],
+    "Lua.workspace.checkThirdParty": "ApplyInMemory",
+    "factorio.package.zipLocation": "inside",
+    "factorio.versions": [
+        {
+            "name": "debug",
+            "factorioPath": "D:\\SteamLibrary\\steamapps\\common\\Factorio\\bin\\x64\\factorio.exe",
+            
+        }
+    ]
+}
