@@ -61,7 +61,7 @@ entity.minable.result = "train-scaling-stop"
 
 local player = util.table.deepcopy(data.raw["character"]["character"])
 player.name = "train-scaling-driver"
-player.collision_mask = {layers = {ghost_layer= true}}
+player.collision_mask = {layers = {player = true}}
 
 local signal_group = {
   type = "item-subgroup",
