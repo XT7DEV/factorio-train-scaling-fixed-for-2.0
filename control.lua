@@ -271,12 +271,12 @@ end
 -- when station entities are created, add to tracking as appropriate
 local default_backer_names
 local function on_built_entity(event)
-  if event.created_entity.type == "train-stop" then
-    if event.created_entity.backer_name == "__mt__" then
+  if event.entity.type == "train-stop" then
+    if event.entity.backer_name == "__mt__" then
       return
     end
-    local entity = event.created_entity
-    if event.created_entity.name == "train-scaling-stop" then
+    local entity = event.entity
+    if event.entity.name == "train-scaling-stop" then
       -- do this only if it's a default name
       if not default_backer_names then
         -- haven't called this yet, scan once and cache in local table
