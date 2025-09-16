@@ -784,12 +784,10 @@ local function building_tick(event)
     if not train_config.builder_loco.valid then
       abort = true
       if train_config.builder_station.valid then
-        train_config.builder_station.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-construction-train-missing"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-construction-train-missing"},
           position = train_config.builder_station.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = train_config.builder_station.force,
         })
       end
     else
@@ -797,34 +795,28 @@ local function building_tick(event)
       -- bail if the station's gone
       if not train_config.builder_station.valid then
         abort = true
-        train_config.builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-construction-station-missing"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-construction-station-missing"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = train_config.builder_loco.force,
         })
       end
       -- bail if the length isn't what we expect due to attaching to another train or deleting cars
       if #train.carriages ~= train_config.expected_length then
         abort = true
-        train_config.builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-wrong-train-length"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-wrong-train-length"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = train_config.builder_loco.force,
         })
       end
       -- bail if there hasn't been a carriage successfully placed in 15 seconds
       if game.tick - train_config.progress_tick > 900 then
         abort = true
-        train_config.builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-timeout"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-timeout"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = train_config.builder_loco.force,
         })
       end
     end
@@ -832,22 +824,18 @@ local function building_tick(event)
     if train_config.type == "construction" then
       if not train_config.template or not train_config.template.valid then
         abort = true
-        train_config.builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-train-wrong-configuration"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-train-wrong-configuration"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = train_config.builder_loco.force,
         })
       end
       if not train_config.input_chest or not train_config.input_chest.valid then
         abort = true
-        train_config.builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-input-chest-missing"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-input-chest-missing"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = train_config.builder_loco.force,
         })
       end
 
@@ -902,12 +890,10 @@ local function building_tick(event)
             -- didn't have one in the inventory
             wagon.destroy()
             abort = true
-            train_config.builder_loco.surface.create_entity({
-              name = "flying-text",
-              text = {"train-scaling.error-wagon-ingredient-missing"},
+            player().create_local_flying_text({
+              text = {"train-scaling-updated.error-wagon-ingredient-missing"},
               position = train_config.builder_loco.position,
               color = {r = 1, g = 0.45, b = 0, a = 0.8},
-              force = train_config.builder_loco.force,
             })
             abort_build(train_config)
           else
@@ -926,12 +912,10 @@ local function building_tick(event)
                   })
                 else
                   abort = true
-                  train_config.builder_loco.surface.create_entity({
-                    name = "flying-text",
-                    text = {"train-scaling.error-fuel-missing"},
+                  player().create_local_flying_text({
+                    text = {"train-scaling-updated.error-fuel-missing"},
                     position = train_config.builder_loco.position,
                     color = {r = 1, g = 0.45, b = 0, a = 0.8},
-                    force = train_config.builder_loco.force,
                   })
                   abort_build(train_config)
                 end
@@ -952,36 +936,30 @@ local function building_tick(event)
                       position = equipment_table.position,
                     }) then
                       abort = true
-                      train_config.builder_loco.surface.create_entity({
-                        name = "flying-text",
-                        text = {"train-scaling.error-equipment-placement-failure"},
+                        player().create_local_flying_text({
+                        text = {"train-scaling-updated.error-equipment-placement-failure"},
                         position = train_config.builder_loco.position,
                         color = {r = 1, g = 0.45, b = 0, a = 0.8},
-                        force = train_config.builder_loco.force,
                       })
                       abort_build(train_config)
                       break
                     end
                   else
                     abort = true
-                    train_config.builder_loco.surface.create_entity({
-                      name = "flying-text",
-                      text = {"train-scaling.error-equipment-missing"},
+                    player().create_local_flying_text({
+                      text = {"train-scaling-updated.error-equipment-missing"},
                       position = train_config.builder_loco.position,
                       color = {r = 1, g = 0.45, b = 0, a = 0.8},
-                      force = train_config.builder_loco.force,
                     })
                     abort_build(train_config)
                   end
                 end
               else
                 abort = true
-                train_config.builder_loco.surface.create_entity({
-                  name = "flying-text",
-                  text = {"train-scaling.error-equipment-placement-failure"},
+                player().create_local_flying_text({
+                  text = {"train-scaling-updated.error-equipment-placement-failure"},
                   position = train_config.builder_loco.position,
                   color = {r = 1, g = 0.45, b = 0, a = 0.8},
-                  force = train_config.builder_loco.force,
                 })
                 abort_build(train_config)
               end
@@ -1039,12 +1017,10 @@ local function building_tick(event)
                 -- verify that the train now looks equal
                 if not train_config.template or not train_config.template.valid or not train_eq(train_config.template.train, wagon.train) then
                   abort = true
-                  train_config.builder_station.surface.create_entity({
-                    name = "flying-text",
-                    text = {"train-scaling.error-train-wrong-configuration"},
+                  player().create_local_flying_text({
+                    text = {"train-scaling-updated.error-train-wrong-configuration"},
                     position = train_config.builder_station.position,
                     color = {r = 1, g = 0.45, b = 0, a = 0.8},
-                    force = train_config.builder_station.force,
                   })
                   abort_build(train_config)
                 end
@@ -1094,23 +1070,19 @@ local function building_tick(event)
       local output_inv
       if not train_config.output_chest or not train_config.output_chest.valid then
         abort = true
-        train_config.builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-output-chest-missing"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-output-chest-missing"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = train_config.builder_loco.force,
         })
       else
         output_inv = train_config.output_chest.get_inventory(defines.inventory.chest)
         if not output_inv or not output_inv.valid then
           abort = true
-          train_config.builder_loco.surface.create_entity({
-            name = "flying-text",
-            text = {"train-scaling.error-output-chest-missing"},
+          player().create_local_flying_text({
+            text = {"train-scaling-updated.error-output-chest-missing"},
             position = train_config.builder_loco.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
-            force = train_config.builder_loco.force,
           })
         end
       end
@@ -1242,7 +1214,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
         })
         if input_chest_entities == nil or input_chest_entities[1] == nil then
           fail = true
-          fail_reason = "train-scaling.error-input-chest-missing"
+          fail_reason = "train-scaling-updated.error-input-chest-missing"
         else
           -- check chest contents
           local chest_inventory = input_chest_entities[1].get_inventory(defines.inventory.chest)
@@ -1262,7 +1234,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
             end
             if not found then
               fail = true
-              fail_reason = "train-scaling.error-wagon-ingredient-missing"
+              fail_reason = "train-scaling-updated.error-wagon-ingredient-missing"
             end
             -- if this carriage needs fuel, find that too
             if carriage_config.fuel_categories and not fail then
@@ -1286,7 +1258,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
               end
               if not carriage_config.fuel then
                 fail = true
-                fail_reason = "train-scaling.error-fuel-missing"
+                fail_reason = "train-scaling-updated.error-fuel-missing"
               end
             end
 
@@ -1297,7 +1269,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                   contents[grid.item_name] = contents[grid.item_name] - 1
                 else
                   fail = true
-                  fail_reason = "train-scaling.error-equipment-missing"
+                  fail_reason = "train-scaling-updated.error-equipment-missing"
                   break
                 end
               end
@@ -1333,12 +1305,12 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
               end
               if not builder_loco or not builder_loco.valid then
                 fail = true
-                fail_reason = "train-scaling.error-construction-train-placement-fail"
+                fail_reason = "train-scaling-updated.error-construction-train-placement-fail"
               elseif not in_cone[opposite[station_entity.direction]](builder_loco.orientation)  then
                 -- crossing track is getting the snap of the placement, give up
                 builder_loco.destroy()
                 fail = true
-                fail_reason = "train-scaling.error-construction-train-placement-fail-crossing"
+                fail_reason = "train-scaling-updated.error-construction-train-placement-fail-crossing"
               end
               if builder_loco.valid and #builder_loco.train.carriages > 1 then
                 -- we're connected to another train. this is a disaster, since we already set it into manual mode if it was in automatic.
@@ -1376,7 +1348,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                     end
                   end
                   fail = true
-                  fail_reason = "train-scaling.error-construction-train-placement-too-close"
+                  fail_reason = "train-scaling-updated.error-construction-train-placement-too-close"
                 end
               end
               if not fail then
@@ -1463,12 +1435,10 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 -- tracking the number of in-progress train builds for checking if more need triggered
                 station_config.running_builds = (station_config.running_builds or 0) + 1
 
-                surface.create_entity({
-                  name = "flying-text",
-                  text = {"train-scaling.build-started", station_name},
+                player().create_local_flying_text({
+                  text = {"train-scaling-updated.build-started", station_name},
                   position = station_entity.position,
                   color = {r = 1, g = 0.45, b = 0, a = 0.8},
-                  force = station_entity.force,
                 })
 
                 -- check if we've started construction of enough copies of the train
@@ -1479,7 +1449,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
               end
             else
               fail = true
-              fail_reason = "train-scaling.error-construction-train-placement-fail"
+              fail_reason = "train-scaling-updated.error-construction-train-placement-fail"
             end
           end
         end
@@ -1490,12 +1460,10 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
     for station_entity_id, station_entity in pairs(scaling_config.entities) do
       if fail_reasons[station_entity_id] then
         if not storage.errors[station_entity_id] then
-          surface.create_entity({
-            name = "flying-text",
+          player().create_local_flying_text({
             text = {fail_reasons[station_entity_id]},
             position = station_entity.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
-            force = station_entity.force,
           })
           storage.errors[station_entity_id] = tick
         end
@@ -1514,23 +1482,19 @@ local function on_train_changed_state(event)
     end
     if not scaling_config.deconstruct_nonempty then
       if next(event.train.get_contents()) or next(event.train.get_fluid_contents()) then
-        station_entity.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-cargo-not-empty"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-cargo-not-empty"},
           position = station_entity.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = station_entity.force,
         })
         return
       end
     end
     if #event.train.passengers > 0 then
-      station_entity.surface.create_entity({
-        name = "flying-text",
-        text = {"train-scaling.error-train-occupied"},
+      player().create_local_flying_text({
+        text = {"train-scaling-updated.error-train-occupied"},
         position = station_entity.position,
         color = {r = 1, g = 0.45, b = 0, a = 0.8},
-        force = station_entity.force,
       })
       return
     end
@@ -1559,12 +1523,10 @@ local function on_train_changed_state(event)
     })
     local output_chest = output_chest_entities[1]
     if not output_chest or not output_chest.valid then
-      station_entity.surface.create_entity({
-        name = "flying-text",
-        text = {"train-scaling.error-output-chest-missing"},
+      player().create_local_flying_text({
+        text = {"train-scaling-updated.error-output-chest-missing"},
         position = station_entity.position,
         color = {r = 1, g = 0.45, b = 0, a = 0.8},
-        force = station_entity.force,
       })
       return
     end
@@ -1577,12 +1539,10 @@ local function on_train_changed_state(event)
     }
     local output_inv = output_chest.get_inventory(defines.inventory.chest)
     if not deconstruct_carriage_into_inventory(back, output_inv) then
-      station_entity.surface.create_entity({
-        name = "flying-text",
-        text = {"train-scaling.error-output-chest-full"},
+      player().create_local_flying_text({
+        text = {"train-scaling-updated.error-output-chest-full"},
         position = station_entity.position,
         color = {r = 1, g = 0.45, b = 0, a = 0.8},
-        force = station_entity.force,
       })
       return
     end
@@ -1596,12 +1556,10 @@ local function on_train_changed_state(event)
     if builder_loco and builder_loco.valid then
       -- tug is down, let's make sure we're in good shape to queue deconstruction..
       if #builder_loco.train.carriages == 1 then
-        builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-construction-train-placement-fail"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-construction-train-placement-fail"},
           position = builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = builder_loco.force,
         })
         return
       end
@@ -1613,24 +1571,20 @@ local function on_train_changed_state(event)
           builder_loco.disconnect_rolling_stock(defines.rail_direction.back)
         end
         if not carriage_in_train(builder_loco, front.train) then
-          builder_loco.surface.create_entity({
-            name = "flying-text",
-            text = {"train-scaling.error-construction-train-placement-fail"},
+          player().create_local_flying_text({
+            text = {"train-scaling-updated.error-construction-train-placement-fail"},
             position = builder_loco.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
-            force = builder_loco.force,
           })
           return
         end
       end
 
       if not carriage_in_train(builder_loco, front.train) then
-        builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-construction-train-placement-fail"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-construction-train-placement-fail"},
           position = builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = builder_loco.force,
         })
         return
       end
@@ -1665,12 +1619,10 @@ local function on_train_changed_state(event)
       if not builder_loco or not builder_loco.valid then
         -- somehow failed on the second place, just error
         if #builder_loco.train.carriages == 1 then
-          builder_loco.surface.create_entity({
-            name = "flying-text",
-            text = {"train-scaling.error-construction-train-placement-fail"},
+          player().create_local_flying_text({
+            text = {"train-scaling-updated.error-construction-train-placement-fail"},
             position = builder_loco.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
-            force = builder_loco.force,
           })
           return
         end
@@ -1685,12 +1637,10 @@ local function on_train_changed_state(event)
           builder_loco.disconnect_rolling_stock(defines.rail_direction.back)
         end
         if not carriage_in_train(builder_loco, front.train) then
-          builder_loco.surface.create_entity({
-            name = "flying-text",
-            text = {"train-scaling.error-construction-train-placement-fail"},
+          player().create_local_flying_text({
+            text = {"train-scaling-updated.error-construction-train-placement-fail"},
             position = builder_loco.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
-            force = builder_loco.force,
           })
           return
         end
@@ -1698,12 +1648,10 @@ local function on_train_changed_state(event)
 
       if #builder_loco.train.carriages ~= carriage_count then
         -- still the wrong number, something's wrong
-        builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-construction-train-placement-fail"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-construction-train-placement-fail"},
           position = builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = builder_loco.force,
         })
         builder_loco.destroy()
         front.train.manual_mode = false
@@ -1766,12 +1714,10 @@ local function on_train_changed_state(event)
 
       if builder_loco.burner.remaining_burning_fuel == 0 and not next(builder_loco.burner.inventory.get_contents()) then
         -- no fuel at all after restoring burner state and checking the input chest (if there was one), bail
-        builder_loco.surface.create_entity({
-          name = "flying-text",
-          text = {"train-scaling.error-fuel-missing"},
+        player().create_local_flying_text({
+          text = {"train-scaling-updated.error-fuel-missing"},
           position = builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
-          force = builder_loco.force,
         })
         builder_loco.destroy()
         return
@@ -1816,12 +1762,10 @@ local function on_train_changed_state(event)
 
     else
       -- couldn't make the tug
-      station_entity.surface.create_entity({
-        name = "flying-text",
-        text = {"train-scaling.error-construction-train-placement-fail"},
+      player().create_local_flying_text({
+        text = {"train-scaling-updated.error-construction-train-placement-fail"},
         position = station_entity.position,
         color = {r = 1, g = 0.45, b = 0, a = 0.8},
-        force = station_entity.force,
       })
     end
   end
@@ -2127,7 +2071,7 @@ local function get_trains_dropdown(entity, player)
   if template and template.valid then
     template_train_id = template.train.id
   end
-  local items = {{"train-scaling.config-no-template"}}
+  local items = {{"train-scaling-updated.config-no-template"}}
   if not storage.open_train_dropdown_mapping then
     storage.open_train_dropdown_mapping = {}
   end
@@ -2186,7 +2130,7 @@ local function get_trains_dropdown(entity, player)
   end
   if template and template.valid and selected == 1 then
     -- there's a template out there but it's not one of the trains we scanned
-    table.insert(items, {"train-scaling.disassociated-train"})
+    table.insert(items, {"train-scaling-updated.disassociated-train"})
     selected = #items
     -- add a buffer item for the redraw
     table.insert(storage.open_train_dropdown_mapping[player.index], false)
@@ -2227,8 +2171,8 @@ local function draw_normal_station_gui(player)
     name = "train_scaling_config_enable_toggle",
     type = "checkbox",
     state = enabled,
-    caption = {"train-scaling.config-enable-scaling"},
-    tooltip = {"train-scaling.config-enable-scaling-tooltip"},
+    caption = {"train-scaling-updated.config-enable-scaling"},
+    tooltip = {"train-scaling-updated.config-enable-scaling-tooltip"},
   })
   if enabled then
     local items, selected = get_trains_dropdown(entity, player)
@@ -2236,21 +2180,21 @@ local function draw_normal_station_gui(player)
         name = "train_scaling_template_flow",
         type = "flow",
         direction = "horizontal",
-        caption = {"train-scaling.config-template-label"},
+        caption = {"train-scaling-updated.config-template-label"},
     })
     local dropdown = template_flow.add({
       name = "train_scaling_config_template_dropdown",
       type = "drop-down",
       items = items,
       selected_index = selected,
-      tooltip = {"train-scaling.config-template-tooltip"}
+      tooltip = {"train-scaling-updated.config-template-tooltip"}
     })
     local goto_button = template_flow.add({
       name = "train_scaling_config_template_goto_button",
       type = "button",
       enabled = selected ~= 1,
-      caption = {"train-scaling.config-goto-label"},
-      tooltip = {"train-scaling.config-goto-tooltip"},
+      caption = {"train-scaling-updated.config-goto-label"},
+      tooltip = {"train-scaling-updated.config-goto-tooltip"},
     })
 
     if selected ~= 1 then
@@ -2283,7 +2227,7 @@ local function draw_normal_station_gui(player)
         type = "drop-down",
         items = stations,
         selected_index = selected,
-        tooltip = {"train-scaling.config-scaling-picker-tooltip"},
+        tooltip = {"train-scaling-updated.config-scaling-picker-tooltip"},
       })
 
       local slider_flow = config_flow.add({
@@ -2297,13 +2241,13 @@ local function draw_normal_station_gui(player)
         minimum_value = 0,
         maximum_value = 25,
         value = station_config.target or count,
-        tooltip = {"train-scaling.config-target-count-tooltip"},
+        tooltip = {"train-scaling-updated.config-target-count-tooltip"},
       })
       local slider_text = slider_flow.add({
         name = "train_scaling_config_target_textbox",
         type = "textfield",
         text = station_config.target or count,
-        tooltip = {"train-scaling.config-target-count-tooltip"},
+        tooltip = {"train-scaling-updated.config-target-count-tooltip"},
       })
       local signals_enabled = station_config.output_signals
       if not signals_enabled then
@@ -2313,8 +2257,8 @@ local function draw_normal_station_gui(player)
         name = "train_scaling_config_signal_toggle",
         type = "checkbox",
         state = signals_enabled,
-        caption = {"train-scaling.config-enable-signals"},
-        tooltip = {"train-scaling.config-enable-signals-tooltip"},
+        caption = {"train-scaling-updated.config-enable-signals"},
+        tooltip = {"train-scaling-updated.config-enable-signals-tooltip"},
       })
       if signals_enabled then
         local signal_table = config_flow.add({
@@ -2326,7 +2270,7 @@ local function draw_normal_station_gui(player)
         local current_label = signal_table.add({
           name = "train_scaling_config_current_label",
           type = "label",
-          caption = {"train-scaling.config-current-count-signal"},
+          caption = {"train-scaling-updated.config-current-count-signal"},
         })
         local current_choose = signal_table.add({
           name = "train_scaling_config_current_choose",
@@ -2339,7 +2283,7 @@ local function draw_normal_station_gui(player)
         local total_label = signal_table.add({
           name = "train_scaling_config_total_label",
           type = "label",
-          caption = {"train-scaling.config-total-count-signal"},
+          caption = {"train-scaling-updated.config-total-count-signal"},
         })
         local total_choose = signal_table.add({
           name = "train_scaling_config_total_choose",
@@ -2352,7 +2296,7 @@ local function draw_normal_station_gui(player)
         local stations_label = signal_table.add({
           name = "train_scaling_config_stations_label",
           type = "label",
-          caption = {"train-scaling.config-stations-count-signal"},
+          caption = {"train-scaling-updated.config-stations-count-signal"},
         })
         local stations_choose = signal_table.add({
           name = "train_scaling_config_stations_choose",
@@ -2365,20 +2309,20 @@ local function draw_normal_station_gui(player)
       local count_label = config_flow.add({
         name = "train_scaling_config_count_display",
         type = "label",
-        caption = {"train-scaling.config-current-count", count},
+        caption = {"train-scaling-updated.config-current-count", count},
       })
       if station_config.running_builds and station_config.running_builds > 0 then
-        count_label.caption = {"train-scaling.config-current-count-with-building", count, station_config.running_builds}
+        count_label.caption = {"train-scaling-updated.config-current-count-with-building", count, station_config.running_builds}
       end
       local build_count_display = config_flow.add({
         name = "train_scaling_config_build_count",
         type = "label",
-        caption = {"train-scaling.config-build-count", station_config.built_trains or 0 },
+        caption = {"train-scaling-updated.config-build-count", station_config.built_trains or 0 },
       })
       local decommissioned_count_display = config_flow.add({
         name = "train_scaling_config_decom_count",
         type = "label",
-        caption = {"train-scaling.config-decommissioned-count", station_config.decommissioned_trains or 0 },
+        caption = {"train-scaling-updated.config-decommissioned-count", station_config.decommissioned_trains or 0 },
       })
     end
   end
@@ -2462,20 +2406,20 @@ local function update_normal_station_gui(player)
   local count_label = config_flow.train_scaling_config_count_display
   if count_label then
     if station_config.running_builds and station_config.running_builds > 0 then
-      count_label.caption = {"train-scaling.config-current-count-with-building", station_config.current, station_config.running_builds}
+      count_label.caption = {"train-scaling-updated.config-current-count-with-building", station_config.current, station_config.running_builds}
     else
-      count_label.caption = {"train-scaling.config-current-count", station_config.current}
+      count_label.caption = {"train-scaling-updated.config-current-count", station_config.current}
     end
   end
 
   local build_count_display = config_flow.train_scaling_config_build_count
   if build_count_display then
-    build_count_display.caption = {"train-scaling.config-build-count", station_config.built_trains or 0 }
+    build_count_display.caption = {"train-scaling-updated.config-build-count", station_config.built_trains or 0 }
   end
 
   local decommissioned_count_display = config_flow.train_scaling_config_decom_count
   if decommissioned_count_display then
-    decommissioned_count_display.caption = {"train-scaling.config-decommissioned-count", station_config.decommissioned_trains or 0 }
+    decommissioned_count_display.caption = {"train-scaling-updated.config-decommissioned-count", station_config.decommissioned_trains or 0 }
   end
 end
 
@@ -2502,12 +2446,12 @@ local function draw_scaling_station_gui(player)
   local fuel_stack_dropdown = config_flow.add({
     name = "train_scaling_station_fuel_stack_dropdown",
     type = "drop-down",
-    tooltip = {"train-scaling.config-scaling-fuel-tooltip"},
+    tooltip = {"train-scaling-updated.config-scaling-fuel-tooltip"},
     items = {
-      {"train-scaling.config-fuel-fill"},
-      {"train-scaling.config-fuel-1stack"},
-      {"train-scaling.config-fuel-2stack"},
-      {"train-scaling.config-fuel-3stack"},
+      {"train-scaling-updated.config-fuel-fill"},
+      {"train-scaling-updated.config-fuel-1stack"},
+      {"train-scaling-updated.config-fuel-2stack"},
+      {"train-scaling-updated.config-fuel-3stack"},
     },
     selected_index = stack_index,
   })
@@ -2515,18 +2459,18 @@ local function draw_scaling_station_gui(player)
     name = "train_scaling_config_deconstruct_nonempty_toggle",
     type = "checkbox",
     state = (scaling_config.deconstruct_nonempty ~= nil),
-    caption = {"train-scaling.config-deconstruct-nonempty"},
-    tooltip = {"train-scaling.config-deconstruct-nonempty-tooltip"},
+    caption = {"train-scaling-updated.config-deconstruct-nonempty"},
+    tooltip = {"train-scaling-updated.config-deconstruct-nonempty-tooltip"},
   })
   local build_count_display = config_flow.add({
     name = "train_scaling_config_build_count",
     type = "label",
-    caption = {"train-scaling.config-build-count", storage.scaling_station_metrics[entity.unit_number].built_trains },
+    caption = {"train-scaling-updated.config-build-count", storage.scaling_station_metrics[entity.unit_number].built_trains },
   })
   local decommissioned_count_display = config_flow.add({
     name = "train_scaling_config_decom_count",
     type = "label",
-    caption = {"train-scaling.config-decommissioned-count", storage.scaling_station_metrics[entity.unit_number].decommissioned_trains },
+    caption = {"train-scaling-updated.config-decommissioned-count", storage.scaling_station_metrics[entity.unit_number].decommissioned_trains },
   })
 end
 
@@ -2552,12 +2496,12 @@ local function update_scaling_station_gui(player)
 
   local build_count_display = config_flow.train_scaling_config_build_count
   if build_count_display then
-    build_count_display.caption = {"train-scaling.config-build-count", storage.scaling_station_metrics[entity.unit_number].built_trains }
+    build_count_display.caption = {"train-scaling-updated.config-build-count", storage.scaling_station_metrics[entity.unit_number].built_trains }
   end
 
   local decommissioned_count_display = config_flow.train_scaling_config_decom_count
   if decommissioned_count_display then
-    decommissioned_count_display.caption = {"train-scaling.config-decommissioned-count", storage.scaling_station_metrics[entity.unit_number].decommissioned_trains }
+    decommissioned_count_display.caption = {"train-scaling-updated.config-decommissioned-count", storage.scaling_station_metrics[entity.unit_number].decommissioned_trains }
   end
 end
 
