@@ -38,7 +38,7 @@ local technology = {
       recipe = "train-scaling-stop"
     }
   },
-  prerequisites = { "rail-signals", "advanced-electronics" },
+  prerequisites = { "automated-rail-transportation", "advanced-electronics" },
   unit = {
     count = 500,
     ingredients =
