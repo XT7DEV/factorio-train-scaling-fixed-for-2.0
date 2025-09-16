@@ -1,4 +1,4 @@
-if mods.pyhightech then
+--[[if mods.pyhightech then
   data.raw.recipe["train-scaling-stop"].ingredients = {
     {"train-stop", 1},
     {"locomotive", 1},
@@ -6,4 +6,4 @@ if mods.pyhightech then
   }
   data.raw.technology["train-scaling"].unit.ingredients[3] = nil
   data.raw.technology["train-scaling"].prerequisites[2] = nil
-end
+end]]--

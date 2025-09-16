@@ -292,7 +292,7 @@ local function on_built_entity(event)
       local x_input, y_input = rotate_relative_position[entity.direction](1.5, 0.5)
       local x_output, y_output = rotate_relative_position[entity.direction](1.5, -0.5)
       if entity.surface.can_place_entity({
-        name = "logistic-chest-requester",
+        name = "requester-chest",
         position = {
           x = entity.position.x + x_input,
           y = entity.position.y + y_input,
@@ -302,7 +302,7 @@ local function on_built_entity(event)
       }) then
         local requester = entity.surface.create_entity({
           name = "entity-ghost",
-          inner_name = "logistic-chest-requester",
+          inner_name = "requester-chest",
           position = {
             x = entity.position.x + x_input,
             y = entity.position.y + y_input,
@@ -314,7 +314,7 @@ local function on_built_entity(event)
         end
       end
       if entity.surface.can_place_entity({
-        name = "logistic-chest-active-provider",
+        name = "active-provider-chest",
         position = {
           x = entity.position.x + x_output,
           y = entity.position.y + y_output,
@@ -324,7 +324,7 @@ local function on_built_entity(event)
       }) then
         local provider = entity.surface.create_entity({
           name = "entity-ghost",
-          inner_name = "logistic-chest-active-provider",
+          inner_name = "active-provider-chest",
           position = {
             x = entity.position.x + x_output,
             y = entity.position.y + y_output,
