@@ -1239,18 +1239,30 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
               for _, player in pairs(game.players) do
                 player.print("Looking for "..tostring(simple_stack.name))
               end
+
               if contents[simple_stack.name] and contents[simple_stack.name] >= simple_stack.count then
+                for _, player in pairs(game.players) do
+                  player.print("found "..tostring(simple_stack.name))
+                end
                 -- found one, reduce its count by the number needed and save which item we're planning to use for it.
                 contents[simple_stack.name] = contents[simple_stack.name] - simple_stack.count
                 carriage_config.item_to_place = simple_stack.name
                 carriage_config.item_to_place_count = simple_stack.count
                 found = true
                 break
+              else
+                for _, player in pairs(game.players) do
+                  player.print("didnt find "..tostring(simple_stack.name))
+                  player.print("DEBUG "..tostring(contents[simple_stack.name]))
+                end
               end
             end
             if not found then
               fail = true
               fail_reason = "train-scaling-updated.error-wagon-ingredient-missing"
+              for _, player in pairs(game.players) do
+                player.print("FAILED")
+              end
             end
             -- if this carriage needs fuel, find that too
             if carriage_config.fuel_categories and not fail then
