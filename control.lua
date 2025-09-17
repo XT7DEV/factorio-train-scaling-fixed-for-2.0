@@ -1240,12 +1240,14 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 player.print("Looking for "..tostring(simple_stack.name))
               end
 
-              if contents[simple_stack.name] and contents[simple_stack.name] >= simple_stack.count then
+              local ItemStack = chest_inventory.find_item_stack(simple_stack.name)
+
+              if ItemStack and ItemStack.count >= simple_stack.count then
                 for _, player in pairs(game.players) do
                   player.print("found "..tostring(simple_stack.name))
                 end
                 -- found one, reduce its count by the number needed and save which item we're planning to use for it.
-                contents[simple_stack.name] = contents[simple_stack.name] - simple_stack.count
+                ItemStack.count = ItemStack.count - simple_stack.count
                 carriage_config.item_to_place = simple_stack.name
                 carriage_config.item_to_place_count = simple_stack.count
                 found = true
