@@ -44,6 +44,12 @@ local opposite = {
   [defines.direction.west] = defines.direction.east,
 }
 
+local function create_flying_text(text, position, color)
+    for _, player in ipairs(game.players) do
+      player.create_local_flying_text(text, position, color)
+    end
+end
+
 -- comparison funtion to determine if two carriages are configured the same for all attributes we care to compare
 local function carriage_eq(carriage_a, carriage_b)
   -- compare color - disabled due to https://github.com/shanemadden/factorio-train-scaling/issues/5
@@ -784,7 +790,7 @@ local function building_tick(event)
     if not train_config.builder_loco.valid then
       abort = true
       if train_config.builder_station.valid then
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-construction-train-missing"},
           position = train_config.builder_station.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -795,7 +801,7 @@ local function building_tick(event)
       -- bail if the station's gone
       if not train_config.builder_station.valid then
         abort = true
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-construction-station-missing"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -804,7 +810,7 @@ local function building_tick(event)
       -- bail if the length isn't what we expect due to attaching to another train or deleting cars
       if #train.carriages ~= train_config.expected_length then
         abort = true
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-wrong-train-length"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -813,7 +819,7 @@ local function building_tick(event)
       -- bail if there hasn't been a carriage successfully placed in 15 seconds
       if game.tick - train_config.progress_tick > 900 then
         abort = true
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-timeout"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -824,7 +830,7 @@ local function building_tick(event)
     if train_config.type == "construction" then
       if not train_config.template or not train_config.template.valid then
         abort = true
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-train-wrong-configuration"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -832,7 +838,7 @@ local function building_tick(event)
       end
       if not train_config.input_chest or not train_config.input_chest.valid then
         abort = true
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-input-chest-missing"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -890,7 +896,7 @@ local function building_tick(event)
             -- didn't have one in the inventory
             wagon.destroy()
             abort = true
-            player().create_local_flying_text({
+            create_flying_text({
               text = {"train-scaling-updated.error-wagon-ingredient-missing"},
               position = train_config.builder_loco.position,
               color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -912,7 +918,7 @@ local function building_tick(event)
                   })
                 else
                   abort = true
-                  player().create_local_flying_text({
+                  create_flying_text({
                     text = {"train-scaling-updated.error-fuel-missing"},
                     position = train_config.builder_loco.position,
                     color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -936,7 +942,7 @@ local function building_tick(event)
                       position = equipment_table.position,
                     }) then
                       abort = true
-                        player().create_local_flying_text({
+                        create_flying_text({
                         text = {"train-scaling-updated.error-equipment-placement-failure"},
                         position = train_config.builder_loco.position,
                         color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -946,7 +952,7 @@ local function building_tick(event)
                     end
                   else
                     abort = true
-                    player().create_local_flying_text({
+                    create_flying_text({
                       text = {"train-scaling-updated.error-equipment-missing"},
                       position = train_config.builder_loco.position,
                       color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -956,7 +962,7 @@ local function building_tick(event)
                 end
               else
                 abort = true
-                player().create_local_flying_text({
+                create_flying_text({
                   text = {"train-scaling-updated.error-equipment-placement-failure"},
                   position = train_config.builder_loco.position,
                   color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1017,7 +1023,7 @@ local function building_tick(event)
                 -- verify that the train now looks equal
                 if not train_config.template or not train_config.template.valid or not train_eq(train_config.template.train, wagon.train) then
                   abort = true
-                  player().create_local_flying_text({
+                  create_flying_text({
                     text = {"train-scaling-updated.error-train-wrong-configuration"},
                     position = train_config.builder_station.position,
                     color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1070,7 +1076,7 @@ local function building_tick(event)
       local output_inv
       if not train_config.output_chest or not train_config.output_chest.valid then
         abort = true
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-output-chest-missing"},
           position = train_config.builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1079,7 +1085,7 @@ local function building_tick(event)
         output_inv = train_config.output_chest.get_inventory(defines.inventory.chest)
         if not output_inv or not output_inv.valid then
           abort = true
-          player().create_local_flying_text({
+          create_flying_text({
             text = {"train-scaling-updated.error-output-chest-missing"},
             position = train_config.builder_loco.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1435,7 +1441,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 -- tracking the number of in-progress train builds for checking if more need triggered
                 station_config.running_builds = (station_config.running_builds or 0) + 1
 
-                player().create_local_flying_text({
+                create_flying_text({
                   text = {"train-scaling-updated.build-started", station_name},
                   position = station_entity.position,
                   color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1460,7 +1466,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
     for station_entity_id, station_entity in pairs(scaling_config.entities) do
       if fail_reasons[station_entity_id] then
         if not storage.errors[station_entity_id] then
-          player().create_local_flying_text({
+          create_flying_text({
             text = {fail_reasons[station_entity_id]},
             position = station_entity.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1482,7 +1488,7 @@ local function on_train_changed_state(event)
     end
     if not scaling_config.deconstruct_nonempty then
       if next(event.train.get_contents()) or next(event.train.get_fluid_contents()) then
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-cargo-not-empty"},
           position = station_entity.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1491,7 +1497,7 @@ local function on_train_changed_state(event)
       end
     end
     if #event.train.passengers > 0 then
-      player().create_local_flying_text({
+      create_flying_text({
         text = {"train-scaling-updated.error-train-occupied"},
         position = station_entity.position,
         color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1523,7 +1529,7 @@ local function on_train_changed_state(event)
     })
     local output_chest = output_chest_entities[1]
     if not output_chest or not output_chest.valid then
-      player().create_local_flying_text({
+      create_flying_text({
         text = {"train-scaling-updated.error-output-chest-missing"},
         position = station_entity.position,
         color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1539,7 +1545,7 @@ local function on_train_changed_state(event)
     }
     local output_inv = output_chest.get_inventory(defines.inventory.chest)
     if not deconstruct_carriage_into_inventory(back, output_inv) then
-      player().create_local_flying_text({
+      create_flying_text({
         text = {"train-scaling-updated.error-output-chest-full"},
         position = station_entity.position,
         color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1556,7 +1562,7 @@ local function on_train_changed_state(event)
     if builder_loco and builder_loco.valid then
       -- tug is down, let's make sure we're in good shape to queue deconstruction..
       if #builder_loco.train.carriages == 1 then
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-construction-train-placement-fail"},
           position = builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1571,7 +1577,7 @@ local function on_train_changed_state(event)
           builder_loco.disconnect_rolling_stock(defines.rail_direction.back)
         end
         if not carriage_in_train(builder_loco, front.train) then
-          player().create_local_flying_text({
+          create_flying_text({
             text = {"train-scaling-updated.error-construction-train-placement-fail"},
             position = builder_loco.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1581,7 +1587,7 @@ local function on_train_changed_state(event)
       end
 
       if not carriage_in_train(builder_loco, front.train) then
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-construction-train-placement-fail"},
           position = builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1619,7 +1625,7 @@ local function on_train_changed_state(event)
       if not builder_loco or not builder_loco.valid then
         -- somehow failed on the second place, just error
         if #builder_loco.train.carriages == 1 then
-          player().create_local_flying_text({
+          create_flying_text({
             text = {"train-scaling-updated.error-construction-train-placement-fail"},
             position = builder_loco.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1637,7 +1643,7 @@ local function on_train_changed_state(event)
           builder_loco.disconnect_rolling_stock(defines.rail_direction.back)
         end
         if not carriage_in_train(builder_loco, front.train) then
-          player().create_local_flying_text({
+          create_flying_text({
             text = {"train-scaling-updated.error-construction-train-placement-fail"},
             position = builder_loco.position,
             color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1648,7 +1654,7 @@ local function on_train_changed_state(event)
 
       if #builder_loco.train.carriages ~= carriage_count then
         -- still the wrong number, something's wrong
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-construction-train-placement-fail"},
           position = builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1714,7 +1720,7 @@ local function on_train_changed_state(event)
 
       if builder_loco.burner.remaining_burning_fuel == 0 and not next(builder_loco.burner.inventory.get_contents()) then
         -- no fuel at all after restoring burner state and checking the input chest (if there was one), bail
-        player().create_local_flying_text({
+        create_flying_text({
           text = {"train-scaling-updated.error-fuel-missing"},
           position = builder_loco.position,
           color = {r = 1, g = 0.45, b = 0, a = 0.8},
@@ -1762,7 +1768,7 @@ local function on_train_changed_state(event)
 
     else
       -- couldn't make the tug
-      player().create_local_flying_text({
+      create_flying_text({
         text = {"train-scaling-updated.error-construction-train-placement-fail"},
         position = station_entity.position,
         color = {r = 1, g = 0.45, b = 0, a = 0.8},
