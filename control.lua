@@ -1228,7 +1228,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
           for _, player in pairs(game.players) do
             player.print("Contents Of Chest:")
             for _,item in pairs(contents) do
-              player.print(item.name)
+              player.print(tostring(item.count).." "..item.name)
             end
           end
 
@@ -1238,7 +1238,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
             -- iterate the items that might place the carriage entity we're after, see if we have one in the contents.
             for _, simple_stack in ipairs(train_items[carriage_config.name]) do
               for _, player in pairs(game.players) do
-                player.print("Looking for "..tostring(simple_stack.name))
+                player.print("Looking for "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
                 player.print("Round "..tostring(round))
               end
               round = round + 1
@@ -1246,7 +1246,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
 
               if ItemStack and ItemStack.count >= simple_stack.count then
                 for _, player in pairs(game.players) do
-                  player.print("found "..tostring(simple_stack.name))
+                  player.print("found "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
                 end
                 -- found one, reduce its count by the number needed and save which item we're planning to use for it.
                 ItemStack.count = ItemStack.count - simple_stack.count
@@ -1256,7 +1256,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 break
               else
                 for _, player in pairs(game.players) do
-                  player.print("didnt find "..tostring(simple_stack.name))
+                  player.print("didnt find "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
                   player.print("DEBUG "..tostring(contents[simple_stack.name]))
                 end
               end
