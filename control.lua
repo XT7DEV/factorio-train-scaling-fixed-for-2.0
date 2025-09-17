@@ -2016,7 +2016,7 @@ local function construction_check(event)
                   if entity.valid then
                     local up
                     local down
-                    local signals = entity.get_signals()
+                    local signals = entity.get_signals(defines.wire_connector_id.circuit_red, defines.wire_connector_id.circuit_green)
                     if signals then
                       -- some signals present, check them.
                       for _, signal_table in ipairs(signals) do
