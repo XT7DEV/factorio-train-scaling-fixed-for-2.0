@@ -1225,18 +1225,20 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
           -- check chest contents
           local chest_inventory = input_chest_entities[1].get_inventory(defines.inventory.chest)
           local contents = chest_inventory.get_contents()
-          
-          game.player.print("Contents Of Chest:")
-          for _,item in pairs(contents) do
-            game.player.print(item.name)
+          for _, player in pairs(game.players) do
+            player.print("Contents Of Chest:")
+            for _,item in pairs(contents) do
+              player.print(item.name)
+            end
           end
 
           for i, carriage_config in ipairs(build_config) do
             local found = false
             -- iterate the items that might place the carriage entity we're after, see if we have one in the contents.
             for _, simple_stack in ipairs(train_items[carriage_config.name]) do
-              game.player.print("Looking for "..tostring(simple_stack.name))
-
+              for _, player in pairs(game.players) do
+                player.print("Looking for "..tostring(simple_stack.name))
+              end
               if contents[simple_stack.name] and contents[simple_stack.name] >= simple_stack.count then
                 -- found one, reduce its count by the number needed and save which item we're planning to use for it.
                 contents[simple_stack.name] = contents[simple_stack.name] - simple_stack.count
