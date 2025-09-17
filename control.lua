@@ -1956,7 +1956,7 @@ local function construction_check(event)
                 local signals = get_signal_values(station_config, station_name)
                 for entity_unit_number, entity in pairs(station_config.entities) do
                   if entity.valid then
-                    for _, circuit_connection in ipairs(entity.circuit_connection_definitions) do
+                    --[[for _, circuit_connection in ipairs(entity.circuit_connection_definitions) do
                       if circuit_connection.target_entity.name == "constant-combinator" then
                         local signal_map = {}
                         for signal_name, signal_table in pairs(signals) do
@@ -1988,6 +1988,45 @@ local function construction_check(event)
                             if not next(signal_map) then
                               -- all signals updated, stop checking this combinator
                               break
+                            end
+                          end
+                        end
+                      end
+                    end]]
+                    for _, circuit_connector in ipairs(entity.get_wire_connectors(false)) do
+                      for _, circuit_connection in ipairs(circuit_connector.connections) do
+                        if circuit_connection.target.owner.name == "constant-combinator" then
+                          local signal_map = {}
+                          for signal_name, signal_table in pairs(signals) do
+                            signal_map[signal_name] = signal_table.signal.type
+                          end
+                          local behavior = circuit_connection.target.owner.get_or_create_control_behavior()
+                          local parameters = behavior.parameters
+                          for parameter_index, parameter in ipairs(parameters) do
+
+                            if parameter.signal.name and signal_map[parameter.signal.name] == parameter.signal.type then
+                              -- matched, update count
+                              behavior.set_signal(parameter_index, signals[parameter.signal.name])
+                              signal_map[parameter.signal.name] = nil
+                            end
+                            if not next(signal_map) then
+                              -- all signals updated, stop checking this combinator
+                              break
+                            end
+                          end
+
+                          if next(signal_map) then
+                            -- some not found, try to find an empty spot for them
+                            for parameter_index, parameter in ipairs(parameters) do
+                              if parameter.signal.name == nil then
+                                local signal_name = next(signal_map)
+                                behavior.set_signal(parameter_index, signals[signal_name])
+                                signal_map[signal_name] = nil
+                              end
+                              if not next(signal_map) then
+                                -- all signals updated, stop checking this combinator
+                                break
+                              end
                             end
                           end
                         end
