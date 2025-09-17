@@ -2016,7 +2016,7 @@ local function construction_check(event)
                   if entity.valid then
                     local up
                     local down
-                    local signals = entity.get_merged_signals()
+                    local signals = entity.get_signals()
                     if signals then
                       -- some signals present, check them.
                       for _, signal_table in ipairs(signals) do

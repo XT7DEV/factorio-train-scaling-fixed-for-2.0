@@ -8,6 +8,7 @@
             "type": "factoriomod",
             "request": "launch",
             "name": "Factorio Mod Debug",
+            "keepOldLog": true
         },
         {
             "type": "factoriomod",
@@ -15,12 +16,14 @@
             "name": "Factorio Mod Debug (Settings & Data)",
             "hookSettings": true,
             "hookData": true,
+            "keepOldLog": true
         },
         {
             "type": "factoriomod",
             "request": "launch",
             "name": "Factorio Mod Debug (Profile)",
-            "hookMode": "profile"
+            "hookMode": "profile",
+            "keepOldLog": true
         }
     ]
 }
