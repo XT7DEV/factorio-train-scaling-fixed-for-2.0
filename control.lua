@@ -44,9 +44,9 @@ local opposite = {
   [defines.direction.west] = defines.direction.east,
 }
 
-local function create_flying_text(text, position, color)
-    for _, player in ipairs(game.players) do
-      player.create_local_flying_text(text, position, color)
+local function create_flying_text(params)
+    for _, player in pairs(game.players) do
+      player.create_local_flying_text(params)
     end
 end
 
