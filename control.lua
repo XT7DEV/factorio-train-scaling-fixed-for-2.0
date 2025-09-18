@@ -1239,18 +1239,10 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
 
           for i, carriage_config in ipairs(build_config) do
             local found = false
-            local round = 1
             -- iterate the items that might place the carriage entity we're after, see if we have one in the contents.
             for _, simple_stack in ipairs(train_items[carriage_config.name]) do
               print_to_chat("Looking for "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
-              print_to_chat("Round "..tostring(round))
-
-              round = round + 1
               for _, ItemCountThing in pairs(contents) do
-
-                --local ItemStack = chest_inventory.find_item_stack(simple_stack.name)
-
-                --if ItemStack and ItemStack.count >= simple_stack.count then
                 if ItemCountThing.name == simple_stack.name then
                   if ItemCountThing.count >= simple_stack.count then
                     print_to_chat("found "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
@@ -1277,6 +1269,7 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 if prototypes.item[item.name].fuel_category and carriage_config.fuel_categories[prototypes.item[item.name].fuel_category] and item.count > 0 then
                   if not best or prototypes.item[item.name].fuel_value > prototypes.item[best].fuel_value then
                     best = item.name
+                    print_to_chat("Best Fuel: "..tostring(item.name))
                   end
                 end
               end
@@ -1286,9 +1279,14 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 if scaling_config.fuel_stack_count then
                   stacks = scaling_config.fuel_stack_count
                 end
-                contents[best] = contents[best] - (prototypes.item[best].stack_size * stacks)
-                carriage_config.fuel = best
-                carriage_config.fuel_stacks = stacks
+                print_to_chat("Stacks to get of Fuel: "..tostring(stacks))
+                for _,item in pairs(contents) do
+                  if item.name == best then
+                    item.count = item.count - (prototypes.item[item.name].stack_size * stacks)
+                    carriage_config.fuel = best
+                    carriage_config.fuel_stacks = stacks
+                  end
+                end
               end
               if not carriage_config.fuel then
                 fail = true
