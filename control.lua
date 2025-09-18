@@ -608,13 +608,13 @@ local function clear_inventory_into_inventory(inventory_to_clear, dest_inventory
   if not inventory_to_clear or not inventory_to_clear.valid or not dest_inventory or not dest_inventory.valid then
     return
   end
-  for item_name, count in pairs(inventory_to_clear.get_contents()) do
-    if dest_inventory.can_insert({ name = item_name, count = count }) then
+  for _, item in pairs(inventory_to_clear.get_contents()) do
+    if dest_inventory.can_insert({ name = item.name, count = item.count }) then
       dest_inventory.insert({
-        name = item_name,
+        name = item.name,
         count = inventory_to_clear.remove({
-          name = item_name,
-          count = count,
+          name = item.name,
+          count = item.count,
         })
       })
     else
@@ -683,14 +683,14 @@ local function abort_remove_carriage(carriage_config, inventory)
     -- fuel
     local fuel_inventory = entity.get_inventory(defines.inventory.fuel)
     if fuel_inventory then
-      for item_name, item_count in pairs(fuel_inventory.get_contents()) do
+      for _, item in pairs(fuel_inventory.get_contents()) do
         inventory.insert({
-          name = item_name,
-          count = item_count,
+          name = item.name,
+          count = item.count,
         })
         fuel_inventory.remove({
-          name = item_name,
-          count = item_count,
+          name = item.name,
+          count = item.count,
         })
       end
     end
@@ -1710,17 +1710,17 @@ local function on_train_changed_state(event)
         -- fill it with fuel
         local chest_inventory = input_chest_entities[1].get_inventory(defines.inventory.chest)
         local contents = chest_inventory.get_contents()
-        for item_name in pairs(contents) do
-          if prototypes.item[item_name].fuel_category and builder_loco.burner.fuel_categories[prototypes.item[item_name].fuel_category] then
+        for _, item in pairs(contents) do
+          if prototypes.item[item.name].fuel_category and builder_loco.burner.fuel_categories[prototypes.item[item.name].fuel_category] then
             local i = 1
-            while fuel_inventory.can_insert(item_name) and i <= 5 do
+            while fuel_inventory.can_insert(item.name) and i <= 5 do
               local remove_count = chest_inventory.remove({
-                name = item_name,
-                count = prototypes.item[item_name].stack_size,
+                name = item.name,
+                count = prototypes.item[item.name].stack_size,
               })
               if remove_count > 0 then
                 fuel_inventory.insert({
-                  name = item_name,
+                  name = item.name,
                   count = remove_count,
                 })
               else
