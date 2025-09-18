@@ -50,6 +50,12 @@ local function create_flying_text(params)
     end
 end
 
+local function print_to_chat(Text)
+  for _, player in pairs(game.players) do
+    player.print(Text)
+  end
+end
+
 -- comparison funtion to determine if two carriages are configured the same for all attributes we care to compare
 local function carriage_eq(carriage_a, carriage_b)
   -- compare color - disabled due to https://github.com/shanemadden/factorio-train-scaling/issues/5
@@ -1225,11 +1231,10 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
           -- check chest contents
           local chest_inventory = input_chest_entities[1].get_inventory(defines.inventory.chest)
           local contents = chest_inventory.get_contents()
-          for _, player in pairs(game.players) do
-            player.print("Contents Of Chest:")
-            for _,item in pairs(contents) do
-              player.print(tostring(item.count).." "..item.name)
-            end
+
+          print_to_chat("Contents of chest: ")
+          for _,item in pairs(contents) do
+            print_to_chat(tostring(item.count).." "..item.name)
           end
 
           for i, carriage_config in ipairs(build_config) do
@@ -1237,44 +1242,41 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
             local round = 1
             -- iterate the items that might place the carriage entity we're after, see if we have one in the contents.
             for _, simple_stack in ipairs(train_items[carriage_config.name]) do
-              for _, player in pairs(game.players) do
-                player.print("Looking for "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
-                player.print("Round "..tostring(round))
-              end
-              round = round + 1
-              local ItemStack = chest_inventory.find_item_stack(simple_stack.name)
+              print_to_chat("Looking for "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
+              print_to_chat("Round "..tostring(round))
 
-              if ItemStack and ItemStack.count >= simple_stack.count then
-                for _, player in pairs(game.players) do
-                  player.print("found "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
-                end
-                -- found one, reduce its count by the number needed and save which item we're planning to use for it.
-                ItemStack.count = ItemStack.count - simple_stack.count
-                carriage_config.item_to_place = simple_stack.name
-                carriage_config.item_to_place_count = simple_stack.count
-                found = true
-                break
-              else
-                for _, player in pairs(game.players) do
-                  player.print("didnt find "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
-                  player.print("DEBUG "..tostring(contents[simple_stack.name]))
+              round = round + 1
+              for _, ItemCountThing in pairs(contents) do
+
+                --local ItemStack = chest_inventory.find_item_stack(simple_stack.name)
+
+                --if ItemStack and ItemStack.count >= simple_stack.count then
+                if ItemCountThing.name == simple_stack.name then
+                  if ItemCountThing.count >= simple_stack.count then
+                    print_to_chat("found "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
+                    -- found one, reduce its count by the number needed and save which item we're planning to use for it.
+                    ItemCountThing.count = ItemCountThing.count - simple_stack.count
+                    carriage_config.item_to_place = simple_stack.name
+                    carriage_config.item_to_place_count = simple_stack.count
+                    found = true
+                    break
+                  end
+                else
+                  print_to_chat("didnt find "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
                 end
               end
             end
             if not found then
               fail = true
               fail_reason = "train-scaling-updated.error-wagon-ingredient-missing"
-              for _, player in pairs(game.players) do
-                player.print("FAILED")
-              end
             end
             -- if this carriage needs fuel, find that too
             if carriage_config.fuel_categories and not fail then
               local best
-              for item_name, item_count in pairs(contents) do
-                if prototypes.item[item_name].fuel_category and carriage_config.fuel_categories[prototypes.item[item_name].fuel_category] and item_count > 0 then
-                  if not best or prototypes.item[item_name].fuel_value > prototypes.item[best].fuel_value then
-                    best = item_name
+              for _, item in pairs(contents) do
+                if prototypes.item[item.name].fuel_category and carriage_config.fuel_categories[prototypes.item[item.name].fuel_category] and item.count > 0 then
+                  if not best or prototypes.item[item.name].fuel_value > prototypes.item[best].fuel_value then
+                    best = item.name
                   end
                 end
               end
