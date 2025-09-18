@@ -1403,17 +1403,17 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 -- re-fetch the inventory contents, the tug gets fuel priority
                 contents = chest_inventory.get_contents()
                 -- fill it with fuel!
-                for item_name in pairs(contents) do
-                  if contents[item_name] > 0 and prototypes.item[item_name].fuel_category and builder_loco.burner.fuel_categories[prototypes.item[item_name].fuel_category] then
+                for _, item in pairs(contents) do
+                  if item.count > 0 and prototypes.item[item.name].fuel_category and builder_loco.burner.fuel_categories[prototypes.item[item.name].fuel_category] then
                     local i = 1
                     while fuel_inventory.can_insert(item_name) and i <= 5 do
                       local removed = chest_inventory.remove({
-                        name = item_name,
-                        count = prototypes.item[item_name].stack_size,
+                        name = item.name,
+                        count = prototypes.item[item.name].stack_size,
                       })
                       if removed > 0 then
                         fuel_inventory.insert({
-                          name = item_name,
+                          name = item.name,
                           count = removed,
                         })
                       end
