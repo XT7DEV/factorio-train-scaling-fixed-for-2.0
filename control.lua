@@ -1231,21 +1231,13 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
           -- check chest contents
           local chest_inventory = input_chest_entities[1].get_inventory(defines.inventory.chest)
           local contents = chest_inventory.get_contents()
-
-          print_to_chat("Contents of chest: ")
-          for _,item in pairs(contents) do
-            print_to_chat(tostring(item.count).." "..item.name)
-          end
-
           for i, carriage_config in ipairs(build_config) do
             local found = false
             -- iterate the items that might place the carriage entity we're after, see if we have one in the contents.
             for _, simple_stack in ipairs(train_items[carriage_config.name]) do
-              print_to_chat("Looking for "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
               for _, ItemCountThing in pairs(contents) do
                 if ItemCountThing.name == simple_stack.name then
                   if ItemCountThing.count >= simple_stack.count then
-                    print_to_chat("found "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
                     -- found one, reduce its count by the number needed and save which item we're planning to use for it.
                     ItemCountThing.count = ItemCountThing.count - simple_stack.count
                     carriage_config.item_to_place = simple_stack.name
@@ -1253,8 +1245,6 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                     found = true
                     break
                   end
-                else
-                  print_to_chat("didnt find "..tostring(simple_stack.count).." "..tostring(simple_stack.name))
                 end
               end
             end
@@ -1269,7 +1259,6 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 if prototypes.item[item.name].fuel_category and carriage_config.fuel_categories[prototypes.item[item.name].fuel_category] and item.count > 0 then
                   if not best or prototypes.item[item.name].fuel_value > prototypes.item[best].fuel_value then
                     best = item.name
-                    print_to_chat("Best Fuel: "..tostring(item.name))
                   end
                 end
               end
@@ -1279,7 +1268,6 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                 if scaling_config.fuel_stack_count then
                   stacks = scaling_config.fuel_stack_count
                 end
-                print_to_chat("Stacks to get of Fuel: "..tostring(stacks))
                 for _,item in pairs(contents) do
                   if item.name == best then
                     item.count = item.count - (prototypes.item[item.name].stack_size * stacks)
@@ -1393,10 +1381,10 @@ local function try_build(surface_id, force_id, station_name, station_config, sca
                     burner.currently_burning = currently_burning
                     burner.remaining_burning_fuel = storage.scaling_burner_state[station_entity.unit_number].remaining_burning_fuel
                   end
-                  for name, count in pairs(storage.scaling_burner_state[station_entity.unit_number].inventory_contents) do
+                  for _, item in pairs(storage.scaling_burner_state[station_entity.unit_number].inventory_contents) do
                     fuel_inventory.insert({
-                      name = name,
-                      count = count,
+                      name = item.name,
+                      count = item.count,
                     })
                   end
                 end
@@ -1698,10 +1686,10 @@ local function on_train_changed_state(event)
         if currently_burning and currently_burning.valid and currently_burning.fuel_category then
           burner.currently_burning = currently_burning
           burner.remaining_burning_fuel = storage.scaling_burner_state[station_entity.unit_number].remaining_burning_fuel
-          for name, count in pairs(storage.scaling_burner_state[station_entity.unit_number].inventory_contents) do
+          for _, item in pairs(storage.scaling_burner_state[station_entity.unit_number].inventory_contents) do
             fuel_inventory.insert({
-              name = name,
-              count = count,
+              name = item.name,
+              count = item.count,
             })
           end
         end
